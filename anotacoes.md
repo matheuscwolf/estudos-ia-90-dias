@@ -137,3 +137,88 @@ const prompt = `Cliente ${cliente} investiu R$${investido}. Analise.`;
 - ⚠️ Nunca executa "os dois" — só um caminho por vez.
 - ⚠️ **Use chaves `{}` sempre**, mesmo com 1 linha só (evita bugs).
 - Padrão visual:
+if (...) {
+comando;
+} else if (...) {
+comando;
+} else {
+comando;
+}
+### Operadores de comparação
+- `>` maior que
+- `<` menor que
+- `>=` maior ou igual
+- `<=` menor ou igual
+- `===` estritamente igual
+- `!==` estritamente diferente
+- ⚠️ **Sempre `===`, nunca `==`** (evita conversões malucas).
+
+### Operadores lógicos
+- `&&` → E (as duas precisam ser verdadeiras)
+- `||` → OU (basta uma)
+
+### .includes()
+- Verifica se uma string contém outra. Retorna `true`/`false`.
+- `texto.includes("palavra")`
+- Versão primitiva do roteador de agentes de IA.
+
+### Operador ternário
+- **Sintaxe:** `const x = condicao ? valorSeTrue : valorSeFalse;`
+- **Quando usar:** escolha simples entre 2 valores.
+
+### Reatribuição e operadores compostos
+- `pontos = pontos + 5` (forma longa)
+- `pontos += 5` (forma curta, mesma coisa)
+- `pontos -= 3`, `pontos *= 2`, `pontos /= 2`
+- `x++` (soma 1), `x--` (subtrai 1)
+
+---
+
+## 🐛 Erros comuns que aprendi a reconhecer
+
+| Erro | Significa | Causa comum |
+|---|---|---|
+| `SyntaxError: Unexpected token` | Sintaxe quebrada | Aspa não fechada, parêntese faltando, crase trocada |
+| `TypeError: Assignment to constant variable` | Tentou mudar uma `const` | Trocar pra `let` |
+| `ReferenceError: X is not defined` | Variável não existe | Erro de digitação ou esqueceu de declarar |
+| `Error: Cannot find module` | Arquivo não encontrado | Pasta errada no terminal |
+
+---
+
+## 💻 Comandos do terminal
+
+### Navegação
+- `pwd` → mostra a pasta atual
+- `cd nome-da-pasta` → entra na pasta
+- `cd ..` → sobe um nível
+- `ls` → lista arquivos da pasta atual
+- `cls` → limpa o terminal
+- `Seta ↑` → traz o último comando
+
+### Node
+- `node arquivo.js` → executa um arquivo JavaScript
+
+### Git essencial
+- `git config --global user.name "Nome"` → configura nome (1x só)
+- `git config --global user.email "email"` → configura email (1x só)
+- `git init` → cria repositório local na pasta atual
+- `git add .` → marca todos os arquivos pra incluir no próximo commit
+- `git status` → mostra o que mudou e o que vai entrar no commit
+- `git commit -m "mensagem"` → registra um "ponto na história"
+- `git branch -M main` → renomeia branch atual pra `main`
+- `git remote add origin URL` → conecta o repo local ao GitHub
+- `git push -u origin main` → envia tudo pro GitHub (1x: com `-u`, depois só `git push`)
+
+### Fluxo diário Git (vai virar automático)
+---
+
+## 🔑 Insights do Dia 1
+
+- **Programar é um ciclo:** escreve → salva → roda → vê resultado → ajusta. Repete milhares de vezes.
+- **Arquivo guarda só a versão atual.** O terminal guarda histórico de execuções. São coisas diferentes.
+- **Erro não é fracasso, é informação.** Cada erro diz exatamente onde olhar.
+- **Editor vs terminal:** código JavaScript vai no editor. Comandos (`git`, `node`, `cd`) vão no terminal.
+- **`.includes()` + `if` = roteador primitivo.** É o que o Claude vai fazer com mais inteligência depois.
+- **Array de objetos é o formato universal de APIs.** Internalizar agora facilita tudo.
+- **Use chaves `{}` em if/else sempre**, mesmo com 1 linha (bug famoso do "goto fail" da Apple foi assim).
+- **Primeiro commit feito.** O repositório `estudos-ia-90-dias` agora é meu portfólio público.
