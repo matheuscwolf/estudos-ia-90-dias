@@ -222,3 +222,15 @@ comando;
 - **Array de objetos é o formato universal de APIs.** Internalizar agora facilita tudo.
 - **Use chaves `{}` em if/else sempre**, mesmo com 1 linha (bug famoso do "goto fail" da Apple foi assim).
 - **Primeiro commit feito.** O repositório `estudos-ia-90-dias` agora é meu portfólio público.
+
+---
+
+## 📅 Dia 2 — Funções, arrow functions, destructuring
+
+### O que é uma função
+- **Conceito:** um "mini-programa reutilizável" com nome.
+- **Por quê usar:** evita repetir código. Escreve uma vez, chama N vezes.
+- **Analogia:** uma cafeteira. Você coloca ingredientes (entrada), aperta o botão (chamada), sai café (saída).
+
+### Function tradicional (sintaxe clássica)
+```javascript
