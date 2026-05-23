@@ -35,7 +35,6 @@
 - `42` → number (você pode somar)
 - `"42"` → string (você concatena)
 - **Crítico:** `5 + 3 = 8` mas `"5" + "3" = "53"` (junta texto).
-
 ### Array
 - **O que é:** lista ordenada de valores.
 - **Sintaxe:** `const lista = [1, 2, 3, "quatro"];`
@@ -234,3 +233,221 @@ comando;
 
 ### Function tradicional (sintaxe clássica)
 ```javascript
+function nomeDaFuncao(parametro1, parametro2) {
+    return parametro1 + parametro2;
+}
+```
+
+### Arrow function (sintaxe moderna — padrão em 2026)
+3 formas de escrever a MESMA função:
+
+```javascript
+// Versão 1 — function tradicional (raro em código novo)
+function somar(a, b) {
+    return a + b;
+}
+
+// Versão 2 — arrow normal (com chaves e return)
+const somar = (a, b) => {
+    return a + b;
+};
+
+// Versão 3 — arrow compacta (1 linha de cálculo retornado)
+const somar = (a, b) => a + b;
+```
+
+**Quando usar a versão compacta:**
+- Função tem **uma linha só** que retorna um valor
+- Pode tirar: chaves `{}`, palavra `return`
+- Se tiver **1 parâmetro só**, também pode tirar os parênteses: `x => x * 2`
+
+**Quando NÃO cabe na compacta:**
+- Função com várias linhas
+- Função com `console.log` antes do retorno
+- Função com lógica condicional
+
+### 🧱 Checklist mental da arrow function (7 passos)
+Pra não esquecer nada ao escrever uma arrow function:
+
+1. ✅ Começa com `const` e o nome → `const calcularDobro`
+2. ✅ `=` (atribuição)
+3. ✅ `(parametros)` → `(a, b)` — ou só `a` se for 1 só
+4. ✅ A seta `=>`
+5. ✅ Chaves `{ }` envolvendo o corpo (exceto se compacta)
+6. ✅ Dentro: `console.log(...)` OU `return ...`
+7. ✅ Quando chamar: `nomeDaFuncao(argumentos)` — **com parênteses no final**
+
+### ⚠️ 4 erros comuns ao escrever arrow function
+
+1. **Esquecer a seta `=>`**
+```javascript
+   const dobrar = (x) { return x * 2 }   // ❌ falta a seta
+   const dobrar = (x) => { return x * 2 } // ✅
+```
+
+2. **Esquecer as chaves quando precisa**
+```javascript
+   const dobrar = (x) => console.log(x), return x * 2   // ❌
+   const dobrar = (x) => { console.log(x); return x * 2; } // ✅
+```
+
+3. **Usar nomes diferentes nos parâmetros e no corpo**
+```javascript
+   const dobrar = (x) => y * 2   // ❌ recebe x mas usa y
+   const dobrar = (x) => x * 2   // ✅
+```
+
+4. **Chamar a função sem parênteses**
+```javascript
+   const resultado = calcularDobro    // ❌ só copia a referência
+   const resultado = calcularDobro(3, 4)  // ✅ executa de verdade
+```
+
+### console.log vs return — a diferença CRUCIAL
+
+| | console.log | return |
+|---|---|---|
+| O que faz | **Imprime** na tela | **Devolve** valor pra fora da função |
+| Quem usa o valor | Você (humano) vê | Outro código usa |
+| Depois que acaba | Valor some | Valor pode ser guardado em variável |
+| Pra que serve | Debug (investigação) | Produzir resultado útil |
+
+**Analogia:**
+- `console.log` = chef prova a comida (só ele vê)
+- `return` = garçom entrega o prato (cliente recebe)
+
+**Regra prática:** funções de IA quase sempre usam `return`, não `console.log`. `console.log` fica pra debug temporário.
+
+### 🎯 Conceito-chave: variável recebe o RETORNO da função
+
+Quando você escreve:
+```javascript
+const a = somar(3, 4);
+```
+
+A variável `a` recebe o que a função **devolve** (7), **não** os argumentos que entraram (3 e 4).
+
+Os argumentos (3, 4) são "consumidos" pela função. O `7` é o resultado guardado.
+
+### Destructuring (desempacotar)
+
+**O problema que resolve:** extrair várias propriedades de um objeto sem repetir o nome do objeto.
+
+```javascript
+// Sem destructuring (chato)
+const nome = produto.nome;
+const preco = produto.preco;
+const categoria = produto.categoria;
+
+// Com destructuring (1 linha)
+const { nome, preco, categoria } = produto;
+```
+
+**Regras:**
+- Os nomes dentro de `{}` precisam ser **idênticos** às chaves do objeto
+- A ordem dentro de `{}` **não importa**
+- Você pode pegar **só algumas** propriedades, não precisa pegar todas
+
+**Atenção:** as chaves `{}` aparecem em 2 contextos diferentes:
+- `const x = { nome: "Ana" }` → criando objeto (chaves depois do `=`)
+- `const { nome } = x` → destructuring (chaves antes do `=`)
+
+### Destructuring de array
+
+Funciona igual, mas com **colchetes `[]`** e por **posição** (não por nome):
+
+```javascript
+const cores = ["vermelho", "verde", "azul"];
+const [primeira, segunda, terceira] = cores;
+// primeira = "vermelho", segunda = "verde", terceira = "azul"
+```
+
+### Destructuring direto no parâmetro de função
+
+Padrão MUITO comum em código moderno (React, Node, Claude SDK):
+
+```javascript
+// Sem destructuring no parâmetro
+const apresentar = (pessoa) => {
+    console.log(`${pessoa.nome}, ${pessoa.idade} anos`);
+};
+
+// Com destructuring no parâmetro
+const apresentar = ({ nome, idade }) => {
+    console.log(`${nome}, ${idade} anos`);
+};
+```
+
+A segunda forma "abre" o objeto na hora de receber. Mais limpo dentro do corpo.
+
+### Parâmetro vs Argumento (vocabulário)
+
+| Termo | O que é | Onde aparece |
+|---|---|---|
+| **Parâmetro** | "Espaço" da função | Na **definição**: `(a, b)` |
+| **Argumento** | Valor real passado | Na **chamada**: `funcao(3, 4)` |
+
+### Pontuação em JavaScript
+
+| Estrutura | Separador entre itens | Fim |
+|---|---|---|
+| Objeto `{ a, b, c }` | **vírgula** `,` | `;` no final do objeto inteiro |
+| Array `[ a, b, c ]` | **vírgula** `,` | `;` no final do array |
+| Argumentos `funcao(a, b, c)` | **vírgula** `,` | `;` no final da linha |
+| Template literal | nenhum | precisa de **crase** ` antes e depois |
+
+**Regra geral:** vírgula é a separadora universal de "lista de coisas". Ponto-e-vírgula `;` termina **instruções** (linhas completas).
+
+---
+
+## 🎯 3 Técnicas pra aprender a escrever do zero
+
+Quando travar em um exercício novo, use uma dessas:
+
+### Técnica 1 — Tradução reversa
+1. Pega um código que entende
+2. Apaga tudo
+3. Reescreve do zero, sem olhar
+4. Compara no final
+5. Repete até sair automático
+
+**Por quê funciona:** você reproduz padrões em vez de inventar do zero. É como decorar uma receita reescrevendo.
+
+### Técnica 2 — Pseudocódigo antes do código
+Antes de escrever JavaScript, escreve em português usando comentários:
+
+```javascript
+// 1. Vou criar uma função que recebe preço e desconto
+// 2. Ela calcula o desconto em reais
+// 3. Retorna o preço final
+```
+
+Depois traduz cada comentário pra JavaScript. Separa "**pensar a lógica**" de "**traduzir pra sintaxe**".
+
+### Técnica 3 — Variação de exemplos
+Pega um código que funciona. Mantém a **estrutura**, troca os **ingredientes**.
+
+Exemplo:
+```javascript
+// Original
+const calcularDesconto = (preco, desconto) => preco * desconto / 100;
+
+// Variações sua:
+const calcularImposto = (salario, aliquota) => salario * aliquota / 100;
+const calcularComissao = (venda, taxa) => venda * taxa / 100;
+```
+
+**Por quê funciona:** você "começa do zero" mas com rede de segurança.
+
+---
+
+## 🔑 Insights do Dia 2
+
+- **Funções são a peça mais importante de programação.** Tudo é função: agentes, chamadas API, integrações.
+- **`return` > `console.log`** pra código real. `console.log` é só ferramenta de debug.
+- **Variável que recebe função guarda o RETORNO, não o argumento.** Conceito que destrava 90% da confusão inicial.
+- **Arrow function é o padrão moderno.** Vai aparecer em 99% do código JavaScript em 2026.
+- **Destructuring economiza linhas e fica em 100% das chamadas de API.** Quando Claude retornar, você vai usar destructuring pra pegar `content`, `usage`, etc.
+- **Nomes de variáveis não importam pro computador, importam MUITO pra humanos.** Use nomes descritivos.
+- **Pontuação importa em JavaScript.** Vírgulas separam, ponto-e-vírgulas terminam, crases marcam template literal.
+- **Erro de sintaxe não é fracasso, é a forma do JavaScript dizer "olha aqui".** Lê o erro, vê a setinha `^^^`, corrige.
