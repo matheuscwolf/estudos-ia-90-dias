@@ -508,3 +508,186 @@ Pergunta-chave: **"Eu quero ficar com o quê no final?"**
 - **Erros de `NaN` quase sempre são problema de tipo.** Tá tentando fazer matemática com algo que não é número.
 - **Decimal em JavaScript é `.` (ponto), não `,` (vírgula).** Pegadinha pra brasileiros.
 - **Programar é "tentativa + correção" em ciclo.** Você fez 4 tentativas até acertar o `4950`. Isso é normal.
+
+---
+
+# 📅 DIA 4 — Programação Assíncrona
+
+> **Tema:** Como o JavaScript lida com tarefas que demoram (APIs, banco de dados, timers).
+> **Por que importa:** Toda chamada externa (Claude, Open Finance, Supabase) é assíncrona. Sem isso, não tem projeto.
+
+---
+
+## 🌀 1. Síncrono vs Assíncrono
+
+- **Síncrono:** uma linha por vez, em ordem. Se uma trava, tudo trava.
+- **Assíncrono:** dispara a tarefa e segue rodando. Quando termina, avisa.
+
+```javascript
+// Síncrono — bloqueante
+const x = somar(2, 3);
+console.log(x); // 5
+
+// Assíncrono — não-bloqueante
+setTimeout(() => console.log("3s depois"), 3000);
+console.log("Roda PRIMEIRO");
+```
+
+---
+
+## 📦 2. Promise — a "comanda da pizzaria"
+
+Promise = **promessa** de um valor futuro. 3 estados:
+- `pending` → ainda processando
+- `fulfilled` → deu certo (chama `resolve`)
+- `rejected` → deu erro (chama `reject`)
+
+```javascript
+function buscarUsuario(id) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve({ id, nome: "Matheus" }); // sucesso
+      // reject(new Error("Deu ruim!")); // falha
+    }, 1000);
+  });
+}
+```
+
+---
+
+## ⚡ 3. async / await — a sintaxe moderna
+
+### Regras de ouro
+
+1. **`async`** marca uma função como assíncrona. Faz ela **sempre retornar uma Promise**.
+2. **`await`** pausa a execução da função `async` até a Promise resolver. Devolve o valor **desembrulhado**.
+3. `await` **só funciona dentro de `async`**.
+
+### Sem await x Com await (o "clique" mental)
+
+```javascript
+async function teste() { return 42; }
+
+const a = teste();        // Promise { 42 } ← caixa fechada
+const b = await teste();  // 42 ← presente desembrulhado
+```
+
+### Versão antiga (.then) vs moderna (async/await)
+
+```javascript
+// 😵 .then aninhado (callback hell)
+buscarUsuario(1).then(u => {
+  buscarPedidos(u.id).then(p => console.log(p));
+});
+
+// 😎 async/await (linear, lê de cima pra baixo)
+async function main() {
+  const u = await buscarUsuario(1);
+  const p = await buscarPedidos(u.id);
+  console.log(p);
+}
+```
+
+---
+
+## 🆘 4. try / catch — sobrevivência em produção
+
+```javascript
+try {
+  // código que PODE dar erro
+} catch (erro) {
+  // o que fazer SE der erro
+}
+```
+
+- **Sem try/catch:** Promise rejeitada → app explode com stack trace feio (`UnhandledPromiseRejection`).
+- **Com try/catch:** erro é capturado, programa segue vivo.
+
+```javascript
+async function chamarApi() {
+  try {
+    const resposta = await algumaApi();
+    return resposta;
+  } catch (erro) {
+    console.log("API falhou:", erro.message);
+  }
+}
+```
+
+**⚠️ TEMPLATE pra decorar — vou usar 1000 vezes daqui pra frente.**
+
+---
+
+## 🌐 5. fetch — chamada HTTP real
+
+`fetch` = função nativa do JavaScript pra falar com servidores na internet.
+
+### Receita básica
+
+```javascript
+const resposta = await fetch("https://url-da-api.com/endpoint");
+const dados = await resposta.json();
+```
+
+- **1º await:** espera o servidor responder (cabeçalhos).
+- **2º await:** espera o corpo + converte JSON em objeto JS.
+
+### Validações importantes
+
+```javascript
+if (!resposta.ok) {
+  throw new Error(`Erro HTTP ${resposta.status}`);
+}
+```
+
+`resposta.ok` é `true` quando o status é 200–299. Senão, deu ruim.
+
+---
+
+## 🇧🇷 6. Mini-projeto: Buscador de CEP (ViaCEP)
+
+**API usada:** `https://viacep.com.br/ws/CEP/json/`
+
+**Conceitos aplicados:**
+- async/await
+- try/catch
+- fetch
+- template literal (`` `${cep}` ``)
+- throw new Error
+- validação dupla (status HTTP + campo `erro` no JSON)
+- limpeza de input (`replace(/\D/g, "")`)
+
+**Resultado:** consultei 3 CEPs reais (Avenida Paulista, Praça Pio X no Rio, e um inválido) — todos tratados corretamente. ✅
+
+---
+
+## 🎯 Conexão com o projeto do cliente
+
+| O que aprendi hoje | Onde vou usar |
+|---|---|
+| `fetch` | Chamar API do Claude, Twelve Data, Open Finance |
+| `async/await` | Toda função que fala com servidor externo |
+| `try/catch` | Tratamento de erro em produção |
+| Validação de resposta | Garantir que dado chegou correto antes de usar |
+
+**Toda API funciona igual:** você pergunta, ela responde. Muda só a URL e os parâmetros.
+
+---
+
+## 🧠 Insights pessoais do dia
+
+- A função `async` **sempre** retorna Promise, mesmo se eu retornar um número. Sem `await`, fico com a caixa fechada.
+- API não tem "catálogo aberto" — você pergunta UMA coisa por vez.
+- Sem `try/catch`, qualquer queda de internet derruba o app inteiro.
+- `Tab` no terminal autocompleta nomes de pasta (salva tempo + evita typo).
+
+---
+
+## 📂 Arquivos criados no Dia 4
+
+- `dia-04/async.js` → exemplo principal de async/await
+- `dia-04/teste-async.js` → demonstração `Promise { 42 }` vs `42`
+- `dia-04/try-catch.js` → tratamento de erro
+- `dia-04/buscador-cep.js` → mini-projeto com API real
+
+---
