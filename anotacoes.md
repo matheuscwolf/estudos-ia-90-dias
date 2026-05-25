@@ -451,3 +451,60 @@ const calcularComissao = (venda, taxa) => venda * taxa / 100;
 - **Nomes de variáveis não importam pro computador, importam MUITO pra humanos.** Use nomes descritivos.
 - **Pontuação importa em JavaScript.** Vírgulas separam, ponto-e-vírgulas terminam, crases marcam template literal.
 - **Erro de sintaxe não é fracasso, é a forma do JavaScript dizer "olha aqui".** Lê o erro, vê a setinha `^^^`, corrige.
+
+**Esse padrão `filter → map → reduce` é a ferramenta de processamento de dados mais usada em qualquer aplicação séria.**
+
+---
+
+## ⚠️ Armadilhas comuns
+
+### 1. Vírgula em vez de ponto no decimal
+- ❌ `0,9` (separador português)
+- ✅ `0.9` (separador JavaScript)
+
+Em JS, vírgula tem outro significado. `0,9` causa `NaN` ou comportamento estranho.
+
+### 2. Esquecer de acessar a propriedade
+Quando o array é de objetos, lembrar de pegar a propriedade certa:
+- ❌ `produtos.map((p) => p * 0.9)` → multiplica objeto inteiro por 0.9 → `NaN`
+- ✅ `produtos.map((p) => p.preco * 0.9)` → multiplica o preço
+
+### 3. Esquecer comparação no filter
+- ❌ `produtos.filter((p) => "eletrônico")` → retorna a string, não compara
+- ✅ `produtos.filter((p) => p.categoria === "eletrônico")` → compara
+
+### 4. Parênteses faltando em arrow function dentro de método
+- ❌ `numeros.forEach(n) => n * 2)` → 1 parêntese a menos
+- ✅ `numeros.forEach((n) => n * 2)` → 2 níveis de parênteses
+
+### 5. NaN ("Not a Number")
+JavaScript devolve `NaN` quando tenta fazer operação matemática com algo que não é número (objeto, string não numérica, undefined). Sempre que ver `NaN`, investigar **o que tá entrando** na operação.
+
+---
+
+## 🎯 Como decidir qual método usar
+
+Pergunta-chave: **"Eu quero ficar com o quê no final?"**
+
+| Quero... | Use |
+|---|---|
+| Imprimir cada item / fazer algo sem precisar de resultado | `forEach` |
+| Uma nova lista com os itens transformados | `map` |
+| Uma lista com só alguns itens | `filter` |
+| Um número/valor único combinando tudo | `reduce` |
+| Os itens e também o índice | `for` tradicional |
+| Percorrer e poder parar no meio | `for...of` (com `break`) |
+
+---
+
+## 🔑 Insights do Dia 3
+
+- **Loops são a base de processamento de dados.** Sem loop, você só consegue trabalhar com volumes minúsculos.
+- **Métodos funcionais (`map`, `filter`, `reduce`) são mais expressivos que `for` tradicional.** O código diz **o que** quer fazer em vez de **como**.
+- **`map` é o método mais usado em código de IA.** Especialmente pra extrair propriedade: `array.map((x) => x.prop)`.
+- **`filter` retorna `true` ou `false`.** Função do filter é um "teste" pra cada item.
+- **`reduce` parece complexo mas é mecânico.** Acumulador + item atual + valor inicial. Domina a tabela passo a passo e fica fácil.
+- **Encadeamento (`filter().map().reduce()`) é o padrão profissional.** É como você vai processar respostas do Claude.
+- **Erros de `NaN` quase sempre são problema de tipo.** Tá tentando fazer matemática com algo que não é número.
+- **Decimal em JavaScript é `.` (ponto), não `,` (vírgula).** Pegadinha pra brasileiros.
+- **Programar é "tentativa + correção" em ciclo.** Você fez 4 tentativas até acertar o `4950`. Isso é normal.
