@@ -910,4 +910,60 @@ async function buscarCep(cep) {
 - `dia-05/.env` → configurações (NÃO sobe pro Git)
 - `dia-05/package.json` → manifesto do projeto
 
+
 ---
+
+# 📅 DIA 6 — Conceitos de IA
+
+## 🤖 O que é um LLM
+- LLM = Large Language Model
+- Exemplos: Claude, GPT, Gemini, Llama
+- **Claude NÃO pensa.** Prevê a próxima palavra mais provável baseado em bilhões de textos.
+
+## 🎯 Os 3 pilares de boa resposta de IA
+1. **DADO** — qualidade do contexto/info entregue
+2. **PROMPT** — como você instrui
+3. **ORQUESTRAÇÃO** — como combina respostas
+
+## 🪙 Tokens — a moeda da IA
+- Token = pedaço de texto
+- **Regra:** 1 token ≈ 0,75 palavra em português
+- **100 tokens ≈ 1 parágrafo curto**
+- **1.000 tokens ≈ 1 página A4**
+
+### Input vs Output
+- **Input** (o que você manda) = mais barato
+- **Output** (o que Claude responde) = ~5x mais caro
+- Anthropic cobra pelos DOIS
+
+### Exemplo de custo (Opus 4.7)
+- 16k input + 2k output ≈ $0,39 por chamada
+- 100 chamadas/dia ≈ ~R$ 200/dia em custo
+- **Pricing do SaaS precisa cobrir isso com margem**
+
+## 🪟 Janela de Contexto
+- ~200.000 tokens no Claude 4.x
+- ≈ 150.000 palavras ≈ ~300 páginas A4
+- **Input + Output juntos = janela total**
+
+### 3 limitações CRÍTICAS
+1. Input grande deixa menos espaço pra output
+2. Claude **esquece TUDO entre chamadas** (sem memória nativa)
+3. Contexto muito cheio piora a resposta (Claude perde foco)
+
+## 🎯 Conexão com projeto do cliente
+- **Por que precisa de Supabase:** Claude esquece, banco lembra
+- **Por que precisa de orquestrador:** decide qual contexto enviar
+- **Por que múltiplos agentes:** cada um com contexto enxuto
+- **Por que cobrar por uso:** custo varia com tokens
+
+## 💡 Insight de empreendedor
+- **Curar contexto > ter contexto grande**
+- Mandar TUDO pro Claude é caro E piora qualidade
+- Orquestrador é onde mora a inteligência DO PRODUTO (não do Claude)
+
+## ⏳ Faltou (Dia 7)
+- Temperatura (criatividade vs precisão)
+- System prompt vs User prompt
+- Demo no Console da Anthropic
+- Comparação Opus vs Sonnet vs Haiku
