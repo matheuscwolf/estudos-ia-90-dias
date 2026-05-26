@@ -691,3 +691,223 @@ if (!resposta.ok) {
 - `dia-04/buscador-cep.js` → mini-projeto com API real
 
 ---
+
+# 📅 DIA 5 — npm, Módulos e Variáveis de Ambiente
+
+> **Tema:** Sair do "JavaScript solo" e usar bibliotecas profissionais + proteger segredos.
+> **Por que importa:** Sem isso, não tem como instalar SDK do Claude, conectar Supabase, ou subir código com segurança.
+
+---
+
+## 📦 1. npm — Gerenciador de Pacotes do Node
+
+- npm = **Node Package Manager**
+- Repositório com **+2 milhões de bibliotecas** prontas
+- Já vem instalado junto com o Node
+
+### Comandos essenciais
+```bash
+npm --version              # ver versão
+npm init -y                # criar package.json
+npm install nome-pacote    # instalar biblioteca
+npm i nome-pacote          # mesma coisa (atalho)
+```
+
+---
+
+## 📄 2. package.json — O "RG" do Projeto
+
+Arquivo que lista **TUDO** que o projeto precisa pra rodar.
+
+```json
+{
+  "name": "dia-05",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "axios": "^1.16.1",
+    "dotenv": "^17.x.x"
+  }
+}
+```
+
+Se alguém clonar o projeto e rodar `npm install`, baixa tudo automaticamente.
+
+---
+
+## 📂 3. node_modules — A "Despensa" das Bibliotecas
+
+- Pasta gigante onde as bibliotecas baixadas ficam
+- **NUNCA editar nada lá dentro**
+- **NUNCA subir pro Git** (vai no `.gitignore`)
+- Se apagar, é só rodar `npm install` que volta tudo
+
+---
+
+## 🔄 4. CommonJS vs ESM (require vs import)
+
+### CommonJS (antigo, padrão Node "old school")
+```javascript
+const axios = require("axios");
+```
+- `package.json` precisa ter `"type": "commonjs"` (ou nada)
+
+### ESM (moderno, padrão JavaScript oficial)
+```javascript
+import axios from "axios";
+```
+- `package.json` precisa ter `"type": "module"`
+- **Permite top-level await** (await fora de função async)
+- **É o que Claude SDK, Next.js, Supabase usam**
+
+### ⚠️ Pegadinha
+Mudou pra `"type": "module"`? Arquivos com `require` param de funcionar. Tudo ou nada.
+
+---
+
+## 🌐 5. axios vs fetch
+
+| Característica | fetch (nativo) | axios (biblioteca) |
+|---|---|---|
+| Precisa instalar? | Não | Sim (`npm i axios`) |
+| Pegar JSON | `await r.json()` | `r.data` direto |
+| Erro HTTP (404, 500) | Não joga erro | Joga erro automático |
+| Timeout | Difícil | `{ timeout: 5000 }` |
+
+```javascript
+const resposta = await axios.get(url, { timeout: 5000 });
+const dados = resposta.data;
+```
+
+---
+
+## 🔐 6. Variáveis de Ambiente (.env)
+
+### Por que existem
+**NUNCA colocar chaves de API no código.** Bots varrem o GitHub procurando chaves expostas. Histórias reais de gente perdendo R$ 8.000+ por isso.
+
+### Como funciona
+1. Cria arquivo `.env` (com ponto na frente!) na raiz do projeto
+2. Formato: `CHAVE=VALOR` (sem aspas, em MAIÚSCULAS)
+3. Instala `dotenv`: `npm i dotenv`
+4. No código: `import "dotenv/config"`
+5. Acessa via `process.env.NOME_DA_VARIAVEL`
+
+### Exemplo
+```env
+# .env
+ANTHROPIC_API_KEY=sk-ant-abc123
+VIACEP_BASE_URL=https://viacep.com.br/ws
+```
+
+```javascript
+// código.js
+import "dotenv/config";
+const chave = process.env.ANTHROPIC_API_KEY;
+const url = process.env.VIACEP_BASE_URL;
+```
+
+---
+
+## 🛡️ 7. .gitignore — Blindando o Projeto
+
+Arquivo que diz pro Git "esses arquivos não devem subir pro GitHub".
+
+### Mínimo essencial:
+```gitignore
+node_modules/
+.env
+.env.*.local
+.DS_Store
+*.log
+```
+
+### Como verificar se tá protegido
+```bash
+git status
+```
+Se `.env` ou `node_modules/` **NÃO aparecerem** na lista → protegido. ✅
+
+### ⚠️ Regra de ouro
+Se uma chave **JÁ subiu** pro GitHub, ela tá comprometida pra sempre. **Revogue imediatamente** no painel do serviço e gere outra.
+
+---
+
+## 🏗️ 8. Padrão de Código Profissional (mini-projeto cep-pro.js)
+
+```javascript
+import "dotenv/config";
+import axios from "axios";
+
+// 📋 Configurações do .env
+const BASE_URL = process.env.VIACEP_BASE_URL;
+
+// 🛡️ Fail-fast: morre cedo se faltar config crítica
+if (!BASE_URL) {
+  console.error("❌ VIACEP_BASE_URL não definida");
+  process.exit(1);
+}
+
+async function buscarCep(cep) {
+  // Validação ANTES de chamar API (economia)
+  const cepLimpo = cep.replace(/\D/g, "");
+  if (cepLimpo.length !== 8) {
+    return null;
+  }
+  
+  try {
+    const resposta = await axios.get(`${BASE_URL}/${cepLimpo}/json/`, {
+      timeout: 5000
+    });
+    return resposta.data;
+  } catch (erro) {
+    if (erro.code === "ECONNABORTED") {
+      console.log("Timeout");
+    }
+    return null;
+  }
+}
+```
+
+**Padrões usados:**
+- Validação ANTES da chamada externa (economiza tempo + grana)
+- Timeout pra não travar
+- Tratamento granular de erro
+- Configurações no `.env`, não hardcoded
+- Fail-fast: para o programa se faltar config
+
+---
+
+## 🎯 Conexão com o Projeto do Cliente
+
+| O que aprendi hoje | Onde vou usar no projeto |
+|---|---|
+| `npm install` | Instalar SDK do Claude, Supabase, Next.js |
+| `import ... from` | Sintaxe padrão de TUDO no projeto |
+| `.env` | Guardar chave do Claude, Twelve Data, Supabase |
+| `.gitignore` | Não vazar chaves no GitHub público |
+| Validação fail-fast | Não rodar nada sem as chaves carregadas |
+| Timeout em axios | API do Claude pode demorar — preciso de timeout |
+
+---
+
+## 💡 Insights pessoais do Dia 5
+
+- `node_modules/` é "descartável" — sempre dá pra recriar com `npm install`
+- Salvar o arquivo (`Ctrl+S`) é CRÍTICO antes de rodar — esqueci uma vez e o Node rodou versão antiga
+- O `.env` é só um arquivo de texto, mas usa convenção: MAIÚSCULAS com `_`
+- ESM permite `await` no topo do arquivo (top-level await) — economia de código
+- `Tab` no terminal autocompleta nome de arquivo (continuo usando)
+
+---
+
+## 📂 Arquivos criados no Dia 5
+
+- `dia-05/cep-com-axios.js` → primeiro uso de axios (CommonJS)
+- `dia-05/cep-com-import.js` → mesmo código em ESM
+- `dia-05/usando-env.js` → primeira leitura de .env
+- `dia-05/cep-pro.js` → **MINI-PROJETO FINAL** com tudo junto
+- `dia-05/.env` → configurações (NÃO sobe pro Git)
+- `dia-05/package.json` → manifesto do projeto
+
+---
