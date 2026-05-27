@@ -967,3 +967,82 @@ async function buscarCep(cep) {
 - System prompt vs User prompt
 - Demo no Console da Anthropic
 - Comparação Opus vs Sonnet vs Haiku
+
+///
+---
+
+# 📅 DIAS 7 e 8 — API do Claude (resumo)
+
+## 🔑 Setup
+- console.anthropic.com (≠ claude.ai)
+- $5 USD mínimo (≈ R$ 30 com IOF)
+- `.env` com `ANTHROPIC_API_KEY=sk-ant-api03-...`
+- LIÇÃO CARA: nunca abrir `.env` no editor antes de print
+
+## 📐 Estrutura padrão de chamada (TIER 1 — sabe de cor)
+
+```javascript
+import "dotenv/config";
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+const resposta = await client.messages.create({
+  model: "claude-haiku-4-5-20251001",
+  max_tokens: 300,
+  temperature: 0,
+  system: "personalidade aqui",
+  messages: [
+    { role: "user", content: "pergunta" }
+  ]
+});
+
+console.log(resposta.content[0].text);
+console.log("Input:", resposta.usage.input_tokens);
+console.log("Output:", resposta.usage.output_tokens);
+```
+
+## 🎭 Roles
+- **system** → personalidade (campo separado, UMA vez)
+- **user** → usuário/humano
+- **assistant** → Claude
+- messages SEMPRE array `[ ]`, alterna user/assistant, primeira e última são user
+
+## 🧠 Memória do Claude
+- Claude NÃO LEMBRA entre chamadas
+- "Memória" = VOCÊ reenvia histórico no array `messages`
+- Cada chamada API é INDEPENDENTE (≠ claude.ai)
+- Input cresce a cada mensagem em conversa longa
+
+## 🌡️ Temperatura
+- `0` = determinístico (PADRÃO PROFISSIONAL)
+- `0.4` = conversação natural
+- `0.7-1.0` = criativo (naming, brainstorm)
+
+## 💸 Custos comparados (Haiku 4.5)
+- Input: $1/M tokens
+- Output: $5/M tokens (5x mais caro)
+- System prompt cobra em CADA chamada
+- Sonnet: ~13x mais caro que Haiku
+
+## ⚠️ Erros comuns de sintaxe
+1. Crase com aspas misturadas → cores ficam erradas
+2. Vírgula faltando entre campos
+3. `=` em vez de `:` dentro de objeto
+4. Variável usada ANTES de declarar
+5. `messages` sem colchetes (não é array)
+6. Esquecer de SALVAR antes de rodar
+7. Typo no nome do arquivo (use TAB pra autocompletar)
+
+## 🎯 Insights
+- Claude usa TUDO que está no `messages`, não só a última pergunta
+- Posso FABRICAR contexto (mentir pro Claude sobre o que aconteceu)
+- Quem programa olha doc TODO dia, decorar é o objetivo errado
+- Predição antes de rodar = aprende 3x mais
+
+## 📂 Arquivos criados (Dia 7 e 8)
+- primeira-chamada.js, comparando-modelos.js, memoria.js
+- system-prompt.js, temperatura.js, chatbot.js
+- exercicio-1.js (professor matemática), exercicio-2.js (memória hardcoded)
+
+---
