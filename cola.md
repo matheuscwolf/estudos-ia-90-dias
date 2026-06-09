@@ -2,7 +2,7 @@
 
 > Material de consulta RÁPIDA enquanto programo.
 > Para reflexões/histórico, ver `aprendizados.md`.
-> Para material antigo cronológico, ver `anotacoes-antigo.md`.
+> Material antigo cronológico em `anotacoes-antigo.md`.
 
 ---
 
@@ -17,6 +17,20 @@
 | Fim | `git push origin main` | Subir tudo pro GitHub |
 
 > ⚠️ PowerShell não aceita `&&`. Faz um comando por linha.
+
+<details>
+<summary>📖 Por que precisamos de Git?</summary>
+
+Git é o sistema que tira "fotos" do seu código ao longo do tempo. Cada foto é um **commit**. GitHub é a "nuvem" onde essas fotos ficam guardadas.
+
+**3 motivos pra usar Git:**
+1. Backup automático (PC quebrou? Código tá no GitHub)
+2. Histórico (consegue voltar a versão antiga se algo der errado)
+3. Sincronização (PC casa ↔ PC escritório via push/pull)
+
+**Analogia:** Git é tipo "salvar no Google Docs", só que MANUAL. Você decide quando salvar (commit) e quando subir pra nuvem (push).
+
+</details>
 
 ---
 
@@ -60,6 +74,19 @@
 | 8 | Soma contadores + mostra resposta |
 | 9 | `} catch (erro) {...}` |
 
+<details>
+<summary>📖 Por que main() na última linha?</summary>
+
+`async function main() { ... }` apenas **DECLARA** a função. É como escrever uma receita de bolo num caderno. A receita existe, mas o bolo não tá pronto.
+
+A função só **EXECUTA** quando você chama ela: `main();`
+
+Sem essa linha, todo o código do chatbot fica "guardado na gaveta" e nunca roda. É o erro mais comum de quem está aprendendo.
+
+**Tatua:** declarar ≠ executar. Precisa CHAMAR.
+
+</details>
+
 ---
 
 ## 🎭 4. ROLES DA API
@@ -72,6 +99,22 @@
 
 > 🎯 Primeira mensagem do `messages` SEMPRE é `user`.
 > 🎯 Alterna: user → assistant → user → assistant...
+
+<details>
+<summary>📖 Detalhes profundos sobre roles</summary>
+
+**System** é a instrução "de fundo" do Claude. Define quem ele é durante TODA a conversa. Tipo o crachá do ator antes da peça começar. Vai no campo `system:` separado, NÃO dentro do array `messages`.
+
+**User** representa a pessoa real usando seu app. Pode ser texto digitado, voz convertida, ou até dados que você FABRICA (tipo extrato bancário puxado do Supabase pra dar contexto pro Claude).
+
+**Assistant** é o Claude respondendo. Quando você dá memória pro chatbot, esse role guarda o que ele já disse no passado, pra ele "lembrar" em chamadas futuras.
+
+**Implicação pro projeto do cliente:**  
+- System fixo: personalidade do app financeiro (consultor brasileiro)  
+- User dinâmico: vem do frontend/usuário  
+- Assistant: orquestrador acumula no Supabase pra memória persistente
+
+</details>
 
 ---
 
@@ -90,6 +133,21 @@
 
 > **Regra de ouro:** padrão é `0`. Sobe só quando criatividade tem valor.
 
+<details>
+<summary>📖 Por que classificação é sempre 0?</summary>
+
+Classificação não precisa de criatividade — precisa de **CONSISTÊNCIA**.
+
+Imagina seu app financeiro classificando se uma transação é "alimentação" ou "transporte":
+- Temperatura 0: mesmo input → mesma classificação SEMPRE
+- Temperatura 0.7: mesmo input pode dar respostas diferentes em horas diferentes
+
+**Regra prática:** toda vez que existe uma resposta "certa" (extrair, classificar, calcular, sim/não), temperatura 0.
+
+**Criatividade só tem valor quando VARIAÇÃO é desejável** (nomes de produtos, ideias de campanha, textos publicitários).
+
+</details>
+
 ---
 
 ## 💰 6. PRICING DOS MODELOS (USD por milhão de tokens)
@@ -101,6 +159,22 @@
 | Opus 4.7 | $15 | $75 | Decisões críticas, raciocínio |
 
 > Output é ~5x mais caro que input. Sempre.
+
+<details>
+<summary>📖 Como isso afeta a margem do SaaS</summary>
+
+**A escolha de modelo decide se seu app é lucrativo ou prejuízo.**
+
+Exemplo no app financeiro:
+- Classificar tipo de gasto → **Haiku** (tarefa simples, modelo barato)
+- Analisar balanço da Petrobras → **Sonnet** (raciocínio analítico)
+- Cálculo crítico de aposentadoria → **Opus** (precisão máxima)
+
+**Sacada do orquestrador:** ele decide qual modelo usar pra cada subtarefa. Mandar tudo pro Opus quebra a margem. Mandar tudo pro Haiku entrega qualidade ruim.
+
+**É isso que separa SaaS de IA lucrativo de prejuízo:** seleção inteligente de modelo + controle de tokens.
+
+</details>
 
 ---
 
@@ -119,6 +193,27 @@ Memória = VOCÊ reenvia histórico via messages.
 | Após resposta | `historico.push({ role: "assistant", content: textoResposta })` |
 
 > ⚠️ **Erro comum:** esquecer o push do assistant → bot esquece o que ele mesmo disse.
+
+<details>
+<summary>📖 Por que DOIS pushes (user E assistant)?</summary>
+
+Se você só guardar o que o user disse, o histórico fica:
+```
+[user: oi, user: tudo bem?, user: qual meu nome?]
+```
+
+Claude nunca vê **o que ele mesmo respondeu**. Resultado: ele não consegue continuar conversa coerente. Pior ainda, a API pode RECLAMAR porque mensagens devem alternar (user → assistant → user...).
+
+Com os 2 pushes:
+```
+[user: oi, assistant: olá!, user: tudo bem?, assistant: sim!, user: qual meu nome?]
+```
+
+Claude vê a conversa toda e responde com contexto.
+
+**Implicação:** num app real, é VOCÊ (orquestrador) que acumula. Banco de dados (Supabase) guarda histórico persistente entre sessões.
+
+</details>
 
 ---
 
