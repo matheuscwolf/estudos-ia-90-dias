@@ -46,7 +46,7 @@ function calcularCusto(input, output) {
 
 // 🚀 Função principal
 async function main() {
-  console.log("\n🤖 Tio Carlos — Consultor Financeiro IA");
+  console.log("\n🤖 Tio Carlos — Consultor Fina nceiro IA");
   console.log("💡 Digite 'sair' pra encerrar\n");
 
   while (true) {
