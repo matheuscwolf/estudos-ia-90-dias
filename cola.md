@@ -18,28 +18,25 @@
 | Fim | `git push origin main` | Subir tudo pro GitHub |
 
 > ⚠️ PowerShell não aceita `&&`. Faz um comando por linha.
-> ⚠️ Uma pasta por dia, criada no INÍCIO. Senão vira saco de gatos (tipo a dia-07, que misturou Dia 7 + 8).
+> ⚠️ Uma pasta por dia, criada no INÍCIO. Senão vira saco de gatos (tipo a dia-07).
 
 <details>
 <summary>📖 Por que precisamos de Git?</summary>
 
-Git é o sistema que tira "fotos" do seu código ao longo do tempo. Cada foto é um **commit**. GitHub é a "nuvem" onde essas fotos ficam guardadas.
+Git tira "fotos" (commits) do código. GitHub é a nuvem onde ficam.
 
-**3 motivos pra usar Git:**
-1. Backup automático (PC quebrou? Código tá no GitHub)
-2. Histórico (consegue voltar a versão antiga se algo der errado)
-3. Sincronização (PC casa ↔ PC escritório via push/pull)
+**3 motivos:** backup (PC quebrou? tá na nuvem) · histórico (volta versão antiga) · sincronização (casa ↔ escritório).
 
-**Analogia:** Git é tipo "salvar no Google Docs", só que MANUAL. Você decide quando salvar (commit) e quando subir pra nuvem (push).
+**⚠️ push não é só sincronização — é BACKUP.** Sem push no fim, o trabalho fica preso só naquele PC.
 
-**⚠️ push não é só sincronização — é BACKUP.** Se não der push no fim, o trabalho fica preso só naquele PC. (Aconteceu: o `fixacao-2.js` ficou preso no PC do escritório por falta de push, e não veio no `pull` em casa.)
+**Os 3 comandos:**
+- `git add .` → seleciona arquivos (local)
+- `git commit -m "..."` → cria save point (SÓ no PC)
+- `git push origin main` → envia pra NUVEM
 
-**Os 3 comandos do git, traduzidos:**
-- `git add .` → seleciona os arquivos (local)
-- `git commit -m "..."` → cria o save point (SÓ no teu PC)
-- `git push origin main` → envia o save point pra NUVEM (GitHub)
+`git clone URL` → traz o projeto pra um PC novo (1ª vez só).
 
-`git clone URL` → traz o projeto inteiro pra um PC novo (só na primeira vez).
+**🆘 pull travou com "untracked working tree files would be overwritten":** existe um arquivo local solto (não rastreado) com mesmo nome do que vem da nuvem. Apaga o local (`del pasta\arquivo`) e roda o pull de novo.
 
 </details>
 
@@ -59,20 +56,39 @@ Git é o sistema que tira "fotos" do seu código ao longo do tempo. Cada foto é
 | Clonar repo (PC novo) | `git clone URL` |
 | Autocompletar nome | TAB |
 
+> 🎯 **LER O PROMPT antes de `cd`/`mkdir`.** Ele mostra onde você está (`PS C:\...\dia-12>`). Metade dos perrengues é navegação às cegas.
+> 🎯 **`cd ..` é RELATIVO** — sobe UMA pasta de onde você está. Rodar 2x sobe 2 (cuidado pra não sair do projeto).
+> 🎯 **Caminho com espaço no nome** (tipo "Matheus Wolf") SEMPRE entre aspas: `cd "C:\Users\Matheus Wolf\estudos-ia"`. Sem aspas, o terminal quebra no espaço.
+
 ### 🆘 Quando o terminal "trava" ou dá erro
 
 | Situação | O que fazer | Por quê |
 |---|---|---|
-| `Cannot find module 'X'` | confere a PASTA: `cd dia-XX` antes de rodar | `node` procura o arquivo na pasta ATUAL |
-| Terminal preso (não digita comando) | `Ctrl + C` (1-3x) | mata o programa rodando, devolve o controle |
-| Vários programas presos | clica na 🗑️ (lixeira) + abre terminal novo | mata o terminal inteiro de uma vez |
-| Não acho o projeto (PC novo) | `Ctrl + R` (Open Recent) no VS Code | lista os projetos abertos recentemente |
-
-> 🎯 `node nome.js` roda o arquivo **na pasta atual**. O prompt (`PS C:\...\dia-09>`) mostra onde você está. Tá noutra pasta? `cd` até ela primeiro.
+| `Cannot find module 'X'` | confere a PASTA: `cd dia-XX` antes de rodar | `node` procura na pasta ATUAL |
+| Terminal preso (não digita) | `Ctrl + C` (1-3x) | mata o programa rodando |
+| Vários programas presos | clica na 🗑️ (lixeira) + terminal novo | mata o terminal inteiro |
+| Não acho o projeto (PC novo) | `Ctrl + R` (Open Recent) no VS Code | lista projetos recentes |
 
 ---
 
-## 🔤 3. MÉTODOS DE STRING (manipular texto)
+## 🎨 3. CATEGORIAS DE CÓDIGO (como ler qualquer linha)
+
+Exemplo: `const idade: number = 35;`
+
+| Categoria | O que é | Como reconhecer |
+|---|---|---|
+| **Palavra reservada** | vocabulário fixo da linguagem | `const`, `let`, `function`, `if`, `return` — NÃO pode mudar nem inventar |
+| **Nome que você cria** | variáveis e funções | foi VOCÊ que batizou (`idade`, `somar`) — pode trocar sem quebrar |
+| **Tipo** | vocabulário fixo de tipos | aparecem depois dos `:` — `string`, `number`, `boolean` |
+| **Valor** | o dado real | `35`, `"Matheus"`, `true` — texto SEMPRE entre aspas |
+| **Símbolo** | pontuação estrutural | `:` `=` `;` `{ }` `( )` — a "cola" |
+
+> 🎯 **Regra de ouro:** posso mudar o nome sem quebrar? → é nome MEU (variável/função). Não posso, é palavra fixa? → reservada ou tipo.
+> ⚠️ **A cor é só um GUIA** — ela MUDA conforme o tema do VS Code. Não decore "roxo = keyword". Confie na categoria, não na cor.
+
+---
+
+## 🔤 4. MÉTODOS DE STRING (manipular texto)
 
 | Método | O que faz | Exemplo |
 |---|---|---|
@@ -83,84 +99,134 @@ Git é o sistema que tira "fotos" do seu código ao longo do tempo. Cada foto é
 | `.replace("a","b")` | troca a 1ª ocorrência | `"oi oi".replace("oi","tchau")` → `"tchau oi"` |
 | `.split(" ")` | quebra em array | `"a b c".split(" ")` → `["a","b","c"]` |
 
-> 🎯 **Método precisa de DONO:** sempre `string.metodo()`, nunca `metodo()` solto.
-> 🎯 **Encadear** = grudar numa linha só: `entrada.trim().toLowerCase()`
-> 🎯 Método NÃO muda a original — retorna uma string NOVA. Tem que GUARDAR o resultado numa variável.
+> 🎯 Método precisa de DONO: `string.metodo()`, nunca solto.
+> 🎯 Encadear = grudar numa linha: `entrada.trim().toLowerCase()`
+> 🎯 Método não muda a original — retorna NOVA string. GUARDA o resultado.
 
 <details>
-<summary>📖 Pra que serve normalizar (trim + toLowerCase)?</summary>
+<summary>📖 Pra que serve normalizar?</summary>
 
-O `===` é literal — exige texto EXATO. Se o usuário digita "SAIR", "Sair" ou " sair " (com espaço), o `entrada === "sair"` dá `false` e o chatbot não reconhece o comando de sair.
-
-Normalizar resolve: `entrada.trim().toLowerCase()` transforma TODAS as variações em `"sair"` antes de comparar. Aí a comparação fica robusta.
-
-```javascript
-const normalizada = entrada.trim().toLowerCase();
-if (normalizada === "sair") { ... }
-```
+`===` é literal. "SAIR", "Sair", " sair " não batem com "sair". `entrada.trim().toLowerCase()` vira tudo "sair" antes de comparar. Robusto.
 
 </details>
 
 ---
 
-## 🔍 4. REGEX (buscar por PADRÃO)
+## 🔍 5. REGEX (buscar por PADRÃO)
 
 ```
-const regex = /padrão/;     // o padrão vai entre BARRAS
-regex.test(texto)           // o texto bate com o padrão? → true/false
+const regex = /padrão/;     // entre BARRAS
+regex.test(texto)           // bate? → true/false
 ```
 
 | Símbolo | O que faz | Exemplo |
 |---|---|---|
-| `\d` | um dígito (0-9) | `/\d/` acha qualquer número |
-| `+` | um ou mais do anterior | `/\d+/` = sequência de números |
-| `[abc]` | qualquer um desses | `/[aeiou]/` = qualquer vogal |
-| `^` | começo da string | `/^A/` = começa com A |
-| `$` | fim da string | `/o$/` = termina com "o" |
-| `{n}` | exatamente n vezes | `\d{8}` = exatamente 8 dígitos |
+| `\d` | um dígito (0-9) | `/\d/` |
+| `+` | um ou mais | `/\d+/` |
+| `[abc]` | qualquer um desses | `/[aeiou]/` |
+| `^` | começo da string | `/^A/` |
+| `$` | fim da string | `/o$/` |
+| `{n}` | exatamente n vezes | `\d{8}` |
 
-> 🎯 **Contém vs é exatamente:** `/\d/` = "tem ALGUM número" · `/^\d+$/` = "é SÓ números"
-> 🎯 `^...$` juntos = a STRING INTEIRA tem que bater (não só um pedaço dela)
-> 🎯 `regex.test(texto)` = pergunta se o texto bate. Guarda o `true/false` numa variável.
+> 🎯 Contém vs é exatamente: `/\d/` = "tem algum número" · `/^\d+$/` = "é SÓ números"
+> 🎯 `^...$` = a string INTEIRA tem que bater
 
-Exemplo — validar CEP (8 dígitos, nada mais):
 ```javascript
-const regex = /^\d{8}$/;
-regex.test("01310100");   // true
-regex.test("0131");       // false (curto demais)
-regex.test("0131010X");   // false (tem letra)
+const regex = /^\d{8}$/;       // CEP: 8 dígitos
+regex.test("01310100");        // true
+regex.test("0131");            // false (curto)
+regex.test("0131010X");        // false (letra)
 ```
 
 ---
 
-## 📅 5. DATAS (objeto Date)
+## 📅 6. DATAS (objeto Date)
 
 ```
-const agora = new Date();   // a data e hora de AGORA
+const agora = new Date();   // agora
 ```
 
-| Método | O que pega | ⚠️ Pegadinha |
+| Método | Pega | ⚠️ Pegadinha |
 |---|---|---|
-| `.getFullYear()` | o ano (2026) | — |
-| `.getMonth()` | o mês | **JANEIRO = 0!** vai de 0 a 11 → soma `+1` |
-| `.getDate()` | dia do mês (1-31) | `getDate` ≠ `getDay` (esse é dia da semana) |
+| `.getFullYear()` | ano (2026) | — |
+| `.getMonth()` | mês | **JANEIRO = 0!** soma `+1` |
+| `.getDate()` | dia (1-31) | `getDate` ≠ `getDay` (dia da semana) |
 | `.getHours()` | hora (0-23) | — |
 | `.getMinutes()` | minutos (0-59) | — |
 
-> 🎯 `getMonth()` começa em **0** (janeiro). SEMPRE `+ 1` pra mostrar o mês "humano".
-
-Exemplo — data de hoje:
 ```javascript
-const agora = new Date();
-const ano = agora.getFullYear();
 const mes = agora.getMonth() + 1;   // +1 !
-const dia = agora.getDate();
 console.log("Hoje é", dia + "/" + mes + "/" + ano);
 ```
 
 ---
 
-## 📐 6. ESTRUTURA DE CHATBOT (6 BLOCOS)
+## 🔷 7. TYPESCRIPT (JS com checagem de tipos)
+
+**O que é:** JavaScript que avisa erro ENQUANTO você digita. É um corretor ortográfico (NÃO um Copilot — ele não escreve por você, só aponta). Arquivo `.ts`.
+
+| | JavaScript | TypeScript |
+|---|---|---|
+| Vê o erro | ao rodar | enquanto digita |
+| Tipos | adivinha | você declara |
+
+### Rodar um .ts
+
+> ⚠️ O Node NÃO entende `.ts`. Precisa compilar pra `.js` primeiro (`.ts → .js → roda`).
+> 🎯 Atalho: `npx tsx arquivo.ts` (compila e roda de uma vez).
+> 🎯 Instala 1x global: `npm install -g tsx` (aí funciona em qualquer pasta sem perguntar).
+
+### Os 3 tipos básicos
+
+`string` (texto) · `number` (número) · `boolean` (true/false)
+
+### Anotar tipo
+
+| Onde | Sintaxe |
+|---|---|
+| Variável | `let idade: number = 35;` |
+| Função (entrada + saída) | `function somar(a: number, b: number): number { }` |
+| Objeto inteiro | interface (ver abaixo) |
+| Array | `let nomes: string[]` · `let users: Usuario[]` |
+
+> 🎯 Na função: tipos das entradas nos parênteses, tipo da saída DEPOIS do `)`.
+> 🎯 **Definição ≠ chamada:** na definição vão TIPOS (`a: number`), na chamada vão VALORES (`somar(7, 4)`).
+> ⚠️ `console.log(somar)` sem `()` mostra `[Function]` — esqueceu de CHAMAR.
+
+### Interface (molde de objeto)
+
+```typescript
+interface Usuario {
+   nome: string;      // ; no fim de cada linha (não vírgula)
+   idade: number;
+   email?: string;    // ? = OPCIONAL (pode faltar)
+}
+
+const u: Usuario = { nome: "Matheus", idade: 35 };   // carimba com :
+```
+
+| Recurso | O que faz |
+|---|---|
+| `interface Nome { }` | cria molde (Maiúscula por convenção) |
+| `campo: tipo;` | obriga o campo |
+| `campo?: tipo;` | campo OPCIONAL (pode faltar) |
+| `Usuario[]` | array de objetos nesse formato ← é o `historico` tipado! |
+
+> ⚠️ **TS tem FRESTAS:** campo extra dentro de array pode passar batido sem erro. Não confie 100% no "se não sublinhou, tá certo". A interface deve refletir os campos reais.
+
+### Quando usar TS vs JS (trade-off)
+
+| Usa JS puro | Usa TS |
+|---|---|
+| script rápido/rascunho | projeto grande e duradouro |
+| aprendendo um conceito | lida com dinheiro (erro caro) |
+| protótipo descartável | equipe, manutenção longa (Next.js já é TS) |
+
+> TS sempre vira JS no fim. É trabalho extra na escrita pra ganhar segurança na manutenção.
+
+---
+
+## 📐 8. ESTRUTURA DE CHATBOT (6 BLOCOS)
 
 | Bloco | O que tem | Por quê |
 |---|---|---|
@@ -185,26 +251,20 @@ console.log("Hoje é", dia + "/" + mes + "/" + ano);
 | 8 | Soma contadores + mostra resposta |
 | 9 | `} catch (erro) {...}` |
 
-> ⚠️ **try/catch é UMA estrutura só.** Tudo que depende da API (passos 5-8) vai DENTRO do `try`. O `catch` vem UMA vez, no fim. Nunca dois catch.
-> ⚠️ **`rl.close()` antes do `break`** — senão o readline segura o programa aberto e ele não encerra.
-> ⚠️ O `while` mora DENTRO da `main()` (mãe e filho). Cuidado com `}` a mais fechando o while cedo.
+> ⚠️ try/catch é UMA estrutura: passos 5-8 dentro do `try`, UM `catch` no fim.
+> ⚠️ `rl.close()` antes do `break`, senão o programa não encerra.
+> ⚠️ O `while` mora DENTRO da `main()`. Cuidado com `}` a mais.
 
 <details>
 <summary>📖 Por que main() na última linha?</summary>
 
-`async function main() { ... }` apenas **DECLARA** a função. É como escrever uma receita de bolo num caderno. A receita existe, mas o bolo não tá pronto.
-
-A função só **EXECUTA** quando você chama ela: `main();`
-
-Sem essa linha, todo o código do chatbot fica "guardado na gaveta" e nunca roda. É o erro mais comum de quem está aprendendo.
-
-**Tatua:** declarar ≠ executar. Precisa CHAMAR.
+`async function main() {}` só DECLARA. Só EXECUTA quando você chama: `main();`. Declarar ≠ executar.
 
 </details>
 
 ---
 
-## 🎭 7. ROLES DA API
+## 🎭 9. ROLES DA API
 
 | Role | Quem é | Onde fica |
 |---|---|---|
@@ -212,60 +272,42 @@ Sem essa linha, todo o código do chatbot fica "guardado na gaveta" e nunca roda
 | `user` | A pessoa usando | Dentro do `messages` |
 | `assistant` | O Claude respondendo | Dentro do `messages` |
 
-> 🎯 Primeira mensagem do `messages` SEMPRE é `user`.
-> 🎯 Alterna: user → assistant → user → assistant...
+> 🎯 Primeira msg SEMPRE `user`. Alterna user → assistant → user...
 
 <details>
 <summary>📖 Detalhes profundos sobre roles</summary>
 
-**System** é a instrução "de fundo" do Claude. Define quem ele é durante TODA a conversa. Tipo o crachá do ator antes da peça começar. Vai no campo `system:` separado, NÃO dentro do array `messages`.
+**System:** instrução de fundo, define quem o Claude é. Campo `system:` separado.
+**User:** a pessoa real, ou dados que você fabrica (extrato do Supabase).
+**Assistant:** o Claude respondendo; guarda o que ele já disse (memória).
 
-**User** representa a pessoa real usando seu app. Pode ser texto digitado, voz convertida, ou até dados que você FABRICA (tipo extrato bancário puxado do Supabase pra dar contexto pro Claude).
-
-**Assistant** é o Claude respondendo. Quando você dá memória pro chatbot, esse role guarda o que ele já disse no passado, pra ele "lembrar" em chamadas futuras.
-
-**Implicação pro projeto do cliente:**
-- System fixo: personalidade do app financeiro (consultor brasileiro)
-- User dinâmico: vem do frontend/usuário
-- Assistant: orquestrador acumula no Supabase pra memória persistente
+**No projeto:** system fixo (consultor BR), user do frontend, assistant acumulado no Supabase.
 
 </details>
 
 ---
 
-## 🌡️ 8. TEMPERATURA (qual usar quando)
+## 🌡️ 10. TEMPERATURA
 
 | Tarefa | Temp |
 |---|---|
-| Classificar (spam/não-spam) | **0** |
-| Extrair dados (CPF, datas) | **0** |
-| Cálculos / matemática | **0** |
-| Responder fato (capital do BR) | **0** |
+| Classificar / extrair / calcular / fato | **0** |
 | Conversa profissional séria | **0.3** |
 | Chat geral | **0.5** |
 | Brainstorm/criatividade | **0.7-1.0** |
-| Poesia, naming criativo | **1.0** |
 
-> **Regra de ouro:** padrão é `0`. Sobe só quando criatividade tem valor.
+> Padrão é `0`. Sobe só quando criatividade tem valor.
 
 <details>
 <summary>📖 Por que classificação é sempre 0?</summary>
 
-Classificação não precisa de criatividade — precisa de **CONSISTÊNCIA**.
-
-Imagina seu app financeiro classificando se uma transação é "alimentação" ou "transporte":
-- Temperatura 0: mesmo input → mesma classificação SEMPRE
-- Temperatura 0.7: mesmo input pode dar respostas diferentes em horas diferentes
-
-**Regra prática:** toda vez que existe uma resposta "certa" (extrair, classificar, calcular, sim/não), temperatura 0.
-
-**Criatividade só tem valor quando VARIAÇÃO é desejável** (nomes de produtos, ideias de campanha, textos publicitários).
+Classificar precisa de CONSISTÊNCIA, não criatividade. Temp 0 = mesmo input, mesma resposta sempre. Toda vez que existe resposta "certa" (extrair, classificar, calcular, sim/não), temp 0.
 
 </details>
 
 ---
 
-## 💰 9. PRICING DOS MODELOS (USD por milhão de tokens)
+## 💰 11. PRICING DOS MODELOS (USD por milhão de tokens)
 
 | Modelo | Input | Output | Quando usar |
 |---|---|---|---|
@@ -273,27 +315,18 @@ Imagina seu app financeiro classificando se uma transação é "alimentação" o
 | Sonnet 4.5/4.6 | $3 | $15 | Análise, código, equilíbrio |
 | Opus 4.7/4.8 | $5 | $25 | Decisões críticas, raciocínio |
 
-> Output é ~5x mais caro que input. Sempre.
+> Output é ~5x mais caro que input.
 
 <details>
 <summary>📖 Como isso afeta a margem do SaaS</summary>
 
-**A escolha de modelo decide se seu app é lucrativo ou prejuízo.**
-
-Exemplo no app financeiro:
-- Classificar tipo de gasto → **Haiku** (tarefa simples, modelo barato)
-- Analisar balanço da Petrobras → **Sonnet** (raciocínio analítico)
-- Cálculo crítico de aposentadoria → **Opus** (precisão máxima)
-
-**Sacada do orquestrador:** ele decide qual modelo usar pra cada subtarefa. Mandar tudo pro Opus quebra a margem. Mandar tudo pro Haiku entrega qualidade ruim.
-
-**É isso que separa SaaS de IA lucrativo de prejuízo:** seleção inteligente de modelo + controle de tokens.
+A escolha de modelo decide se o app é lucrativo. Classificar gasto → Haiku. Analisar balanço → Sonnet. Cálculo crítico → Opus. O orquestrador escolhe o modelo por subtarefa. Tudo no Opus quebra a margem; tudo no Haiku entrega qualidade ruim.
 
 </details>
 
 ---
 
-## 🧠 10. MEMÓRIA — A LÓGICA
+## 🧠 12. MEMÓRIA — A LÓGICA
 
 ```
 Claude NÃO LEMBRA entre chamadas.
@@ -302,38 +335,24 @@ Memória = VOCÊ reenvia histórico via messages.
 
 | Quando | O que faz |
 |---|---|
-| Início | `const historico = []` (vazio) |
+| Início | `const historico = []` |
 | Antes da API | `historico.push({ role: "user", content: entrada })` |
 | Na chamada | `messages: historico` |
 | Após resposta | `historico.push({ role: "assistant", content: textoResposta })` |
 
-> ⚠️ **Erro comum:** esquecer o push do assistant → bot esquece o que ele mesmo disse.
-> 🎯 `historico` é o array de MENSAGENS (`[]`, pode ser `const`). Contadores de token são variáveis NÚMERO separadas (e usam `let`, porque mudam com `+=`). NÃO aninha contador dentro do histórico.
+> ⚠️ Esquecer o push do assistant → bot esquece o que ele disse.
+> 🎯 `historico` = array de mensagens (`const`). Contadores = números separados (`let`, mudam com `+=`). NÃO aninha contador no histórico.
 
 <details>
-<summary>📖 Por que DOIS pushes (user E assistant)?</summary>
+<summary>📖 Por que DOIS pushes?</summary>
 
-Se você só guardar o que o user disse, o histórico fica:
-```
-[user: oi, user: tudo bem?, user: qual meu nome?]
-```
-
-Claude nunca vê **o que ele mesmo respondeu**. Resultado: ele não consegue continuar conversa coerente. Pior ainda, a API pode RECLAMAR porque mensagens devem alternar (user → assistant → user...).
-
-Com os 2 pushes:
-```
-[user: oi, assistant: olá!, user: tudo bem?, assistant: sim!, user: qual meu nome?]
-```
-
-Claude vê a conversa toda e responde com contexto.
-
-**Implicação:** num app real, é VOCÊ (orquestrador) que acumula. Banco de dados (Supabase) guarda histórico persistente entre sessões.
+Só com push do user, o Claude nunca vê o que ELE respondeu e a API reclama (mensagens devem alternar). Os 2 pushes mantêm a conversa coerente. Em app real, o Supabase guarda isso entre sessões.
 
 </details>
 
 ---
 
-## 🔌 11. CHAMADA SIMPLES À API (saber de cor)
+## 🔌 13. CHAMADA SIMPLES À API
 
 ```javascript
 import "dotenv/config";
@@ -346,9 +365,7 @@ const resposta = await client.messages.create({
   max_tokens: 300,
   temperature: 0,
   system: "Personalidade aqui",
-  messages: [
-    { role: "user", content: "pergunta" }
-  ]
+  messages: [{ role: "user", content: "pergunta" }]
 });
 
 console.log(resposta.content[0].text);
@@ -356,11 +373,11 @@ console.log("Input:", resposta.usage.input_tokens);
 console.log("Output:", resposta.usage.output_tokens);
 ```
 
-> 🎯 Imports: o caminho SEMPRE entre aspas. `dotenv` é o esquisito (sem `from`, sem nome): `import "dotenv/config";`
+> 🎯 Imports: caminho SEMPRE entre aspas. dotenv é o esquisito: `import "dotenv/config";` (sem from, sem nome).
 
 ---
 
-## 💬 12. CHATBOT COMPLETO (saber a estrutura)
+## 💬 14. CHATBOT COMPLETO
 
 ```javascript
 import "dotenv/config";
@@ -424,66 +441,65 @@ main();
 
 ---
 
-## 🚨 13. ERROS QUE EU SEMPRE COMETO
+## 🚨 15. ERROS QUE EU SEMPRE COMETO
 
-> 🔥 **As que mais me pegam:** autocomplete do VS Code mentindo + nome de variável com espaço. Atenção redobrada nessas.
+> 🔥 **As que mais me pegam:** autocomplete do VS Code mentindo + nome de variável com espaço.
 
 ### Digitação / sintaxe
 
 | Erro | Sintoma | Como evitar |
 |---|---|---|
-| Autocomplete mente (`ProcessingInstruction` em vez de `process`) | runtime quebra / sublinhado | LER o que o IntelliSense sugere ANTES de apertar TAB |
-| Nome de variável com espaço (`texto Resposta`) | "is not defined" | nome é UMA palavra: camelCase (`textoResposta`) |
-| Aspas misturadas (`"..."` vs `'...'`) | cores erradas no VS Code | abre e fecha com o MESMO tipo |
-| `.` virou `;` no meio (`resposta.usage;output`) | erro de sintaxe | `.` navega pra dentro, `;` só encerra a linha |
-| `=` em vez de `:` dentro de objeto | sublinhado vermelho | dentro de `{}`: usa `:` |
-| Vírgula faltando entre campos | erro de sintaxe | sempre vírgula, menos no último |
-| Import sem aspas / com `from` no dotenv | erro | caminho SEMPRE entre aspas; dotenv é `import "dotenv/config";` |
+| Autocomplete mente (`ProcessingInstruction` p/ `process`) | runtime quebra | LER o que o IntelliSense sugere antes do TAB |
+| Nome de variável com espaço (`texto Resposta`) | "is not defined" | nome é UMA palavra: camelCase |
+| Aspas misturadas (`"..."` vs `'...'`) | cores erradas | abre e fecha com o MESMO tipo |
+| `.` virou `;` no meio (`usage;output`) | erro de sintaxe | `.` navega pra dentro, `;` só encerra |
+| `=` em vez de `:` em objeto | sublinhado | dentro de `{}`: usa `:` |
+| Vírgula faltando | erro | sempre vírgula, menos no último |
+| Import sem aspas / com `from` no dotenv | erro | caminho entre aspas; `import "dotenv/config";` |
 | `new Promise(resolve)` (falta 1 parêntese) | "Malformed arrow function" | precisa de 2: `new Promise((resolve) => ...)` |
-| Setas/emojis fora de comentário | "Invalid character" | só `//` antes de comentário |
-| `r1` (número 1) em vez de `rl` (letra L) | "rl is not defined" | olhar com atenção a fonte |
-| Typo no nome do arquivo (`date` vs `dates`) | "Cannot find module" | use TAB pra autocompletar |
+| Typo no nome do arquivo (`date`/`dates`) | "Cannot find module" | use TAB |
 
 ### Estrutura / conceito
 
 | Erro | Sintoma | Como evitar |
 |---|---|---|
-| Esquecer `const` na frente da variável | vira global / inconsistência | `const` por padrão, sempre |
-| `function nome =` (mistura sintaxes) | erro de sintaxe | escolhe UMA: `function nome() {}` OU `const nome = () => {}` |
-| Parâmetro com operação (`(tokens * preco)`) | erro | parênteses recebem NOMES separados por vírgula; conta vai no corpo |
-| `se`/`então` em vez de `if` (pseudocódigo) | "Unexpected identifier" | cola é mapa em português; código é a TRADUÇÃO |
-| Nome diferente onde define vs onde usa (`pergunta`/`perguntar`) | "is not defined" | nome IDÊNTICO, letra por letra |
-| Esquecer `.text` em `content[0]` | mostra `[object Object]` | é `resposta.content[0].text` |
-| `try` sem `catch` | erro de sintaxe | try sempre vem com catch |
-| `}` a mais (fecha bloco cedo) | lógica quebra / chave desbalanceada | indentar bem (`Shift+Alt+F`) pra VER a estrutura |
-| Esquecer `main();` no fim | nada roda | ÚLTIMA LINHA do chatbot |
-| Não salvar antes de rodar | roda versão antiga | `Ctrl+S` sempre (bolinha ● na aba = não salvo) |
-| Variável usada antes de declarar | ReferenceError | declara no TOPO |
-| `messages` sem `[ ]` | erro de tipo | messages SEMPRE é array |
+| Esquecer `const` na frente | vira global | `const` por padrão |
+| `function nome =` (mistura sintaxes) | erro | escolhe UMA: `function nome(){}` OU `const nome = () =>{}` |
+| Parâmetro com operação (`(tokens * preco)`) | erro | parênteses recebem NOMES, conta vai no corpo |
+| `se`/`então` em vez de `if` (pseudocódigo) | "Unexpected identifier" | cola é mapa PT; código é a tradução |
+| Nome diferente def vs uso (`pergunta`/`perguntar`) | "is not defined" | nome IDÊNTICO, letra por letra |
+| Esquecer `.text` em `content[0]` | mostra `[object Object]` | `resposta.content[0].text` |
+| **(TS)** definição com VALOR (`a: 7`) | erro | na definição vai TIPO (`a: number`); valor é na chamada |
+| **(TS)** `console.log(somar)` sem `()` | mostra `[Function]` | CHAMA com `somar(7, 4)` |
+| `try` sem `catch` | erro | try sempre vem com catch |
+| `}` a mais (fecha bloco cedo) | lógica quebra | `Shift+Alt+F` pra ver a estrutura |
+| Esquecer `main();` | nada roda | última linha |
+| Não salvar antes de rodar | roda versão antiga | `Ctrl+S` (bolinha ● = não salvo) |
+| `messages` sem `[ ]` | erro de tipo | messages SEMPRE array |
 
 ---
 
-## 🔐 14. SEGURANÇA — CHECKLIST
+## 🔐 16. SEGURANÇA — CHECKLIST
 
 - [ ] `.env` na pasta do projeto (nunca commitar)
 - [ ] `.gitignore` tem linha `.env`
-- [ ] Antes de print: FECHA aba do `.env` no VS Code
-- [ ] Antes de `git push`: roda `git status` e confirma que `.env` NÃO aparece
-- [ ] Se chave foi exposta: REVOGA imediatamente no console.anthropic.com
+- [ ] Antes de print: FECHA aba do `.env`
+- [ ] Antes de `git push`: `git status` e confirma que `.env` NÃO aparece
+- [ ] Chave exposta: REVOGA no console.anthropic.com
 
 ---
 
-## 📦 15. PROJETO DO CLIENTE — OS 3 PILARES DE BOA IA
+## 📦 17. PROJETO DO CLIENTE — OS 3 PILARES
 
 1. **DADO** → qualidade do contexto (Open Finance, Twelve Data)
-2. **PROMPT** → como instruo o Claude (system prompt)
+2. **PROMPT** → como instruo o Claude
 3. **ORQUESTRAÇÃO** → minha lógica decidindo qual agente/modelo usar
 
-> A inteligência do produto está no ORQUESTRADOR, não no Claude.
+> A inteligência está no ORQUESTRADOR, não no Claude.
 
 ---
 
-## 🎯 16. ARQUITETURA DO PROJETO DO CLIENTE
+## 🎯 18. ARQUITETURA DO PROJETO
 
 ```
 [Usuário] → [Frontend Next.js]
@@ -496,12 +512,12 @@ main();
               └→ Claude API (motor de linguagem)
 ```
 
-| Stack | Função | Status no curso |
+| Stack | Função | Status |
 |---|---|---|
 | Next.js 15 | Frontend + App Router | Módulo 7 (Dia 71+) |
 | Supabase | Auth + DB | Módulo 7 (Dia 75+) |
 | Claude API | Motor IA | Módulo 3 (já comecei) |
-| MCP | Conectar Claude com sistemas externos | Módulo 5 (Dia 46+) |
+| MCP | Conectar Claude a sistemas externos | Módulo 5 (Dia 46+) |
 | Open Finance | Dados bancários BR | Via MCP |
 | Twelve Data | Preços de ações BR (.SA) | Módulo 6 |
 | Vercel | Deploy | Módulo 7 |
