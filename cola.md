@@ -13,12 +13,14 @@
 | Início | `git pull origin main` | Trazer mudanças do GitHub |
 | Início | `mkdir dia-XX` + `cd dia-XX` | Criar/entrar na pasta do dia ANTES de criar arquivos |
 | Durante | `git status` | Ver o que mudou |
+| Fim | `cd ..` (voltar pra RAIZ) | O `git add .` só pega da pasta atual pra baixo |
 | Fim | `git add .` | Selecionar tudo pra subir |
 | Fim | `git commit -m "msg"` | Tirar a "foto" da versão |
 | Fim | `git push origin main` | Subir tudo pro GitHub |
 
 > ⚠️ PowerShell não aceita `&&`. Faz um comando por linha.
 > ⚠️ Uma pasta por dia, criada no INÍCIO. Senão vira saco de gatos (tipo a dia-07).
+> ⚠️ **Antes do `git add .`, volta pra RAIZ** (`cd ..`). Se rodar dentro da `dia-XX`, a cola e arquivos da raiz ficam de fora.
 
 <details>
 <summary>📖 Por que precisamos de Git?</summary>
@@ -38,6 +40,8 @@ Git tira "fotos" (commits) do código. GitHub é a nuvem onde ficam.
 
 **🆘 pull travou com "untracked working tree files would be overwritten":** existe um arquivo local solto (não rastreado) com mesmo nome do que vem da nuvem. Apaga o local (`del pasta\arquivo`) e roda o pull de novo.
 
+**Confirmar que .env está protegido:** `git status --untracked-files=all` lista arquivo por arquivo. Se `dia-XX/.env` NÃO aparecer, tá protegido.
+
 </details>
 
 ---
@@ -52,22 +56,27 @@ Git tira "fotos" (commits) do código. GitHub é a nuvem onde ficam.
 | Voltar uma pasta | `cd ..` |
 | Criar pasta | `mkdir nome-pasta` |
 | Criar arquivo | `ni nome.js` |
-| Rodar arquivo JS | `node nome.js` |
+| Rodar JS | `node nome.js` |
+| Rodar TS | `npx tsx nome.ts` |
+| Abrir arquivo rápido | `Ctrl + P` + nome |
 | Clonar repo (PC novo) | `git clone URL` |
 | Autocompletar nome | TAB |
 
-> 🎯 **LER O PROMPT antes de `cd`/`mkdir`.** Ele mostra onde você está (`PS C:\...\dia-12>`). Metade dos perrengues é navegação às cegas.
+> 🎯 **LER O PROMPT antes de `cd`/`mkdir`.** Ele mostra onde você está (`PS C:\...\dia-15>`). Metade dos perrengues é navegação às cegas.
+> 🎯 **`node`/`npx` procura o arquivo na pasta ATUAL.** Tá noutra pasta? `cd` até ela primeiro.
 > 🎯 **`cd ..` é RELATIVO** — sobe UMA pasta de onde você está. Rodar 2x sobe 2 (cuidado pra não sair do projeto).
-> 🎯 **Caminho com espaço no nome** (tipo "Matheus Wolf") SEMPRE entre aspas: `cd "C:\Users\Matheus Wolf\estudos-ia"`. Sem aspas, o terminal quebra no espaço.
+> 🎯 **Caminho com espaço no nome** ("Matheus Wolf") SEMPRE entre aspas: `cd "C:\Users\Matheus Wolf\estudos-ia"`. Sem aspas, quebra no espaço. (PC de casa não tem espaço, o do escritório tem.)
 
 ### 🆘 Quando o terminal "trava" ou dá erro
 
 | Situação | O que fazer | Por quê |
 |---|---|---|
-| `Cannot find module 'X'` | confere a PASTA: `cd dia-XX` antes de rodar | `node` procura na pasta ATUAL |
+| `Cannot find module 'X'` (arquivo) | confere a PASTA: `cd dia-XX` antes de rodar | procura na pasta ATUAL |
+| `Cannot find module 'X'` (pacote, tipo dotenv) | pasta nova não tem os pacotes → `npm init -y` + `npm install <pacote>` | cada pasta tem seu `node_modules` |
 | Terminal preso (não digita) | `Ctrl + C` (1-3x) | mata o programa rodando |
-| Vários programas presos | clica na 🗑️ (lixeira) + terminal novo | mata o terminal inteiro |
-| Não acho o projeto (PC novo) | `Ctrl + R` (Open Recent) no VS Code | lista projetos recentes |
+| Vários programas presos | 🗑️ (lixeira) + terminal novo | mata o terminal inteiro |
+| Não acho o projeto (PC novo) | `Ctrl + R` (Open Recent) | lista projetos recentes |
+| `npx` pergunta "Ok to proceed? (y)" | digita `y` | pacote não instalado nessa pasta |
 
 ---
 
@@ -77,26 +86,26 @@ Exemplo: `const idade: number = 35;`
 
 | Categoria | O que é | Como reconhecer |
 |---|---|---|
-| **Palavra reservada** | vocabulário fixo da linguagem | `const`, `let`, `function`, `if`, `return` — NÃO pode mudar nem inventar |
-| **Nome que você cria** | variáveis e funções | foi VOCÊ que batizou (`idade`, `somar`) — pode trocar sem quebrar |
-| **Tipo** | vocabulário fixo de tipos | aparecem depois dos `:` — `string`, `number`, `boolean` |
+| **Palavra reservada** | vocabulário fixo da linguagem | `const`, `let`, `function`, `if`, `return` — NÃO pode mudar |
+| **Nome que você cria** | variáveis e funções | VOCÊ batizou (`idade`, `somar`) — pode trocar sem quebrar |
+| **Tipo** | vocabulário fixo de tipos | depois dos `:` — `string`, `number`, `boolean` |
 | **Valor** | o dado real | `35`, `"Matheus"`, `true` — texto SEMPRE entre aspas |
 | **Símbolo** | pontuação estrutural | `:` `=` `;` `{ }` `( )` — a "cola" |
 
-> 🎯 **Regra de ouro:** posso mudar o nome sem quebrar? → é nome MEU (variável/função). Não posso, é palavra fixa? → reservada ou tipo.
-> ⚠️ **A cor é só um GUIA** — ela MUDA conforme o tema do VS Code. Não decore "roxo = keyword". Confie na categoria, não na cor.
+> 🎯 **Regra de ouro:** posso mudar o nome sem quebrar? → é nome MEU. Não posso, é palavra fixa? → reservada ou tipo.
+> ⚠️ **A cor é só GUIA** — muda conforme o tema. Confie na categoria, não na cor.
 
 ---
 
-## 🔤 4. MÉTODOS DE STRING (manipular texto)
+## 🔤 4. MÉTODOS DE STRING
 
 | Método | O que faz | Exemplo |
 |---|---|---|
 | `.trim()` | tira espaços das pontas | `"  oi  ".trim()` → `"oi"` |
 | `.toLowerCase()` | tudo minúsculo | `"OI".toLowerCase()` → `"oi"` |
 | `.toUpperCase()` | tudo maiúsculo | `"oi".toUpperCase()` → `"OI"` |
-| `.includes("x")` | contém? (true/false) | `"churrasco".includes("rasc")` → `true` |
-| `.replace("a","b")` | troca a 1ª ocorrência | `"oi oi".replace("oi","tchau")` → `"tchau oi"` |
+| `.includes("x")` | contém? | `"churrasco".includes("rasc")` → `true` |
+| `.replace("a","b")` | troca 1ª ocorrência | `"oi oi".replace("oi","tchau")` → `"tchau oi"` |
 | `.split(" ")` | quebra em array | `"a b c".split(" ")` → `["a","b","c"]` |
 
 > 🎯 Método precisa de DONO: `string.metodo()`, nunca solto.
@@ -124,8 +133,8 @@ regex.test(texto)           // bate? → true/false
 | `\d` | um dígito (0-9) | `/\d/` |
 | `+` | um ou mais | `/\d+/` |
 | `[abc]` | qualquer um desses | `/[aeiou]/` |
-| `^` | começo da string | `/^A/` |
-| `$` | fim da string | `/o$/` |
+| `^` | começo | `/^A/` |
+| `$` | fim | `/o$/` |
 | `{n}` | exatamente n vezes | `\d{8}` |
 
 > 🎯 Contém vs é exatamente: `/\d/` = "tem algum número" · `/^\d+$/` = "é SÓ números"
@@ -161,20 +170,16 @@ console.log("Hoje é", dia + "/" + mes + "/" + ano);
 
 ---
 
-## 🔷 7. TYPESCRIPT (JS com checagem de tipos)
+## 🔷 7. TYPESCRIPT
 
-**O que é:** JavaScript que avisa erro ENQUANTO você digita. É um corretor ortográfico (NÃO um Copilot — ele não escreve por você, só aponta). Arquivo `.ts`.
-
-| | JavaScript | TypeScript |
-|---|---|---|
-| Vê o erro | ao rodar | enquanto digita |
-| Tipos | adivinha | você declara |
+**O que é:** JS que avisa erro ENQUANTO você digita. É um corretor ortográfico (NÃO um Copilot — não escreve por você, só aponta). Arquivo `.ts`.
 
 ### Rodar um .ts
 
-> ⚠️ O Node NÃO entende `.ts`. Precisa compilar pra `.js` primeiro (`.ts → .js → roda`).
+> ⚠️ O Node NÃO entende `.ts`. Precisa compilar pra `.js` primeiro.
 > 🎯 Atalho: `npx tsx arquivo.ts` (compila e roda de uma vez).
-> 🎯 Instala 1x global: `npm install -g tsx` (aí funciona em qualquer pasta sem perguntar).
+> 🎯 Instala 1x global: `npm install -g tsx`.
+> ⚠️ Node/Process reclamando ("Cannot find name 'process'")? Falta o dicionário de tipos do Node: `npm i --save-dev @types/node`.
 
 ### Os 3 tipos básicos
 
@@ -186,18 +191,21 @@ console.log("Hoje é", dia + "/" + mes + "/" + ano);
 |---|---|
 | Variável | `let idade: number = 35;` |
 | Função (entrada + saída) | `function somar(a: number, b: number): number { }` |
+| Função async | `async function main(): Promise<void> { }` |
+| Função que retorna Promise | `function perguntar(t: string): Promise<string> { }` |
 | Objeto inteiro | interface (ver abaixo) |
 | Array | `let nomes: string[]` · `let users: Usuario[]` |
 
 > 🎯 Na função: tipos das entradas nos parênteses, tipo da saída DEPOIS do `)`.
-> 🎯 **Definição ≠ chamada:** na definição vão TIPOS (`a: number`), na chamada vão VALORES (`somar(7, 4)`).
+> 🎯 **Definição ≠ chamada:** na definição vão TIPOS (`a: number`), na chamada vão VALORES (`somar(7, 4)`). ⚠️ MEU ERRO RECORRENTE — não bota valor (`a: 7`, `role: "user"`) na definição!
+> 🎯 `Promise<string>` = "promessa DE string". O `< >` diz o que vem dentro quando resolver.
 > ⚠️ `console.log(somar)` sem `()` mostra `[Function]` — esqueceu de CHAMAR.
 
 ### Interface (molde de objeto)
 
 ```typescript
 interface Usuario {
-   nome: string;      // ; no fim de cada linha (não vírgula)
+   nome: string;      // ; no fim (não vírgula)
    idade: number;
    email?: string;    // ? = OPCIONAL (pode faltar)
 }
@@ -209,12 +217,56 @@ const u: Usuario = { nome: "Matheus", idade: 35 };   // carimba com :
 |---|---|
 | `interface Nome { }` | cria molde (Maiúscula por convenção) |
 | `campo: tipo;` | obriga o campo |
-| `campo?: tipo;` | campo OPCIONAL (pode faltar) |
+| `campo?: tipo;` | OPCIONAL (pode faltar) |
 | `Usuario[]` | array de objetos nesse formato ← é o `historico` tipado! |
 
-> ⚠️ **TS tem FRESTAS:** campo extra dentro de array pode passar batido sem erro. Não confie 100% no "se não sublinhou, tá certo". A interface deve refletir os campos reais.
+> ⚠️ **TS tem FRESTAS:** campo extra dentro de array pode passar batido. Não confie 100% no "se não sublinhou, tá certo".
 
-### Quando usar TS vs JS (trade-off)
+### Union type (`|` = "ou")
+
+```typescript
+role: "user" | "assistant";   // SÓ aceita uma dessas duas
+```
+
+> 🎯 Usa quando o valor só pode ser uma de poucas opções fixas. O SDK do Claude EXIGE `role` assim (não aceita `string` genérico).
+> 🎯 Union de valores literais É um tipo válido (a exceção da regra "só vai tipo").
+
+### Narrowing (provar o tipo antes de usar)
+
+Quando o TS não sabe o tipo exato, você PROVA com uma checagem:
+
+```typescript
+// bloco pode ter vários tipos → provo que é texto:
+const texto = bloco.type === "text" ? bloco.text : "";
+
+// erro do catch é 'unknown' → provo que é Error:
+catch (erro) {
+   const msg = erro instanceof Error ? erro.message : String(erro);
+}
+```
+
+> 🎯 `? :` = ternário (if/else compacto): `condição ? seVerdadeiro : seFalso`
+> 🎯 TS te obriga a PROVAR o que afirma ("isso é texto?" "isso é Error?"). Em JS você chuta; em TS você prova.
+
+### Módulos (separar código em arquivos)
+
+```typescript
+// custos.ts
+export function calcularCusto(a: number, b: number): number { ... }
+
+// main.ts
+import { calcularCusto } from "./custos";   // ./ = mesma pasta, sem .ts
+```
+
+| Sintaxe | Nome | Quando |
+|---|---|---|
+| `import { nome } from "..."` | named (COM chaves) | arquivo exporta várias coisas |
+| `import Nome from "..."` | default (SEM chaves) | arquivo tem UMA exportação principal |
+
+> 🎯 Vantagem: lógica mora em UM lugar (fonte de verdade). Muda 1 arquivo, todos que importam pegam o novo.
+> 🎯 `export` no arquivo que TEM · `import` no que USA.
+
+### Quando usar TS vs JS
 
 | Usa JS puro | Usa TS |
 |---|---|
@@ -222,7 +274,11 @@ const u: Usuario = { nome: "Matheus", idade: 35 };   // carimba com :
 | aprendendo um conceito | lida com dinheiro (erro caro) |
 | protótipo descartável | equipe, manutenção longa (Next.js já é TS) |
 
-> TS sempre vira JS no fim. É trabalho extra na escrita pra ganhar segurança na manutenção.
+> TS sempre vira JS no fim. Trabalho extra na escrita pra ganhar segurança na manutenção.
+
+### ⚠️ Ponto flutuante (dinheiro!)
+
+`0.0045` pode virar `0.004500000005` — imprecisão de binário, todo linguagem tem. Pra mostrar dinheiro: `.toFixed(6)`.
 
 ---
 
@@ -246,21 +302,50 @@ const u: Usuario = { nome: "Matheus", idade: 35 };   // carimba com :
 | 3 | `historico.push USER` |
 | 4 | `try {` |
 | 5 | `await client.messages.create(...)` |
-| 6 | Extrai `textoResposta` (com `.content[0].text`) |
+| 6 | Extrai `textoResposta` |
 | 7 | `historico.push ASSISTANT` |
 | 8 | Soma contadores + mostra resposta |
 | 9 | `} catch (erro) {...}` |
 
 > ⚠️ try/catch é UMA estrutura: passos 5-8 dentro do `try`, UM `catch` no fim.
-> ⚠️ `rl.close()` antes do `break`, senão o programa não encerra.
+> ⚠️ `rl.close()` antes do `break`, senão não encerra.
 > ⚠️ O `while` mora DENTRO da `main()`. Cuidado com `}` a mais.
 
 <details>
 <summary>📖 Por que main() na última linha?</summary>
 
-`async function main() {}` só DECLARA. Só EXECUTA quando você chama: `main();`. Declarar ≠ executar.
+`async function main() {}` só DECLARA. Só EXECUTA quando chama: `main();`. Declarar ≠ executar.
 
 </details>
+
+---
+
+## 🔷 8b. CHATBOT TIPADO (TS) — o que muda
+
+```typescript
+interface Mensagem {
+   role: "user" | "assistant";   // union! não string genérico
+   content: string;
+}
+
+const historico: Mensagem[] = [];
+let tokensTotal: number = 0;
+
+function perguntar(texto: string): Promise<string> { ... }
+function calcularCusto(e: number, s: number): number { ... }
+async function main(): Promise<void> { ... }
+
+// extrair texto com narrowing:
+const bloco = resposta.content[0];
+const textoResposta = bloco.type === "text" ? bloco.text : "";
+
+// catch tipado:
+catch (erro) {
+   const msg = erro instanceof Error ? erro.message : String(erro);
+}
+```
+
+> Setup TS numa pasta nova: `npm init -y` + `npm install dotenv @anthropic-ai/sdk` + `npm i --save-dev @types/node` + copiar `.env`.
 
 ---
 
@@ -301,7 +386,7 @@ const u: Usuario = { nome: "Matheus", idade: 35 };   // carimba com :
 <details>
 <summary>📖 Por que classificação é sempre 0?</summary>
 
-Classificar precisa de CONSISTÊNCIA, não criatividade. Temp 0 = mesmo input, mesma resposta sempre. Toda vez que existe resposta "certa" (extrair, classificar, calcular, sim/não), temp 0.
+Classificar precisa de CONSISTÊNCIA, não criatividade. Temp 0 = mesmo input, mesma resposta. Toda vez que existe resposta "certa" (extrair, classificar, calcular, sim/não), temp 0.
 
 </details>
 
@@ -346,7 +431,7 @@ Memória = VOCÊ reenvia histórico via messages.
 <details>
 <summary>📖 Por que DOIS pushes?</summary>
 
-Só com push do user, o Claude nunca vê o que ELE respondeu e a API reclama (mensagens devem alternar). Os 2 pushes mantêm a conversa coerente. Em app real, o Supabase guarda isso entre sessões.
+Só com push do user, o Claude nunca vê o que ELE respondeu e a API reclama (mensagens devem alternar). Os 2 pushes mantêm a conversa coerente. Em app real, Supabase guarda entre sessões.
 
 </details>
 
@@ -377,7 +462,7 @@ console.log("Output:", resposta.usage.output_tokens);
 
 ---
 
-## 💬 14. CHATBOT COMPLETO
+## 💬 14. CHATBOT COMPLETO (JS)
 
 ```javascript
 import "dotenv/config";
@@ -443,7 +528,7 @@ main();
 
 ## 🚨 15. ERROS QUE EU SEMPRE COMETO
 
-> 🔥 **As que mais me pegam:** autocomplete do VS Code mentindo + nome de variável com espaço.
+> 🔥 **As que mais me pegam:** autocomplete do VS Code mentindo · nome de variável com espaço · valor no lugar de tipo (TS) · `cd ..` esquecido antes do `git add`.
 
 ### Digitação / sintaxe
 
@@ -452,11 +537,11 @@ main();
 | Autocomplete mente (`ProcessingInstruction` p/ `process`) | runtime quebra | LER o que o IntelliSense sugere antes do TAB |
 | Nome de variável com espaço (`texto Resposta`) | "is not defined" | nome é UMA palavra: camelCase |
 | Aspas misturadas (`"..."` vs `'...'`) | cores erradas | abre e fecha com o MESMO tipo |
-| `.` virou `;` no meio (`usage;output`) | erro de sintaxe | `.` navega pra dentro, `;` só encerra |
+| `.` virou `;` no meio (`usage;output`) | erro | `.` entra pra dentro, `;` só encerra |
 | `=` em vez de `:` em objeto | sublinhado | dentro de `{}`: usa `:` |
 | Vírgula faltando | erro | sempre vírgula, menos no último |
 | Import sem aspas / com `from` no dotenv | erro | caminho entre aspas; `import "dotenv/config";` |
-| `new Promise(resolve)` (falta 1 parêntese) | "Malformed arrow function" | precisa de 2: `new Promise((resolve) => ...)` |
+| `new Promise(resolve)` (falta parêntese) | "Malformed arrow function" | `new Promise((resolve) => ...)` |
 | Typo no nome do arquivo (`date`/`dates`) | "Cannot find module" | use TAB |
 
 ### Estrutura / conceito
@@ -466,11 +551,12 @@ main();
 | Esquecer `const` na frente | vira global | `const` por padrão |
 | `function nome =` (mistura sintaxes) | erro | escolhe UMA: `function nome(){}` OU `const nome = () =>{}` |
 | Parâmetro com operação (`(tokens * preco)`) | erro | parênteses recebem NOMES, conta vai no corpo |
-| `se`/`então` em vez de `if` (pseudocódigo) | "Unexpected identifier" | cola é mapa PT; código é a tradução |
+| `se`/`então` em vez de `if` | "Unexpected identifier" | cola é mapa PT; código é a tradução |
 | Nome diferente def vs uso (`pergunta`/`perguntar`) | "is not defined" | nome IDÊNTICO, letra por letra |
 | Esquecer `.text` em `content[0]` | mostra `[object Object]` | `resposta.content[0].text` |
-| **(TS)** definição com VALOR (`a: 7`) | erro | na definição vai TIPO (`a: number`); valor é na chamada |
+| **(TS)** VALOR na definição (`a: 7`, `role: "user"`) | erro | na definição vai TIPO; valor é na chamada/objeto |
 | **(TS)** `console.log(somar)` sem `()` | mostra `[Function]` | CHAMA com `somar(7, 4)` |
+| **(git)** `git add .` dentro da dia-XX | cola/raiz ficam de fora | `cd ..` pra RAIZ antes |
 | `try` sem `catch` | erro | try sempre vem com catch |
 | `}` a mais (fecha bloco cedo) | lógica quebra | `Shift+Alt+F` pra ver a estrutura |
 | Esquecer `main();` | nada roda | última linha |
@@ -484,7 +570,8 @@ main();
 - [ ] `.env` na pasta do projeto (nunca commitar)
 - [ ] `.gitignore` tem linha `.env`
 - [ ] Antes de print: FECHA aba do `.env`
-- [ ] Antes de `git push`: `git status` e confirma que `.env` NÃO aparece
+- [ ] Antes de `git push`: `git status --untracked-files=all` e confirma que `.env` NÃO aparece
+- [ ] Pasta nova com API: copiar o `.env` pra ela também
 - [ ] Chave exposta: REVOGA no console.anthropic.com
 
 ---
@@ -521,3 +608,9 @@ main();
 | Open Finance | Dados bancários BR | Via MCP |
 | Twelve Data | Preços de ações BR (.SA) | Módulo 6 |
 | Vercel | Deploy | Módulo 7 |
+
+---
+
+## 📆 PROGRESSO
+
+Dias 1-6: JS fundamentos · Dia 7-8: API + chatbot CLI · Dia 9: strings/regex/datas · Dias 10-14: TypeScript (tipos, interfaces, arrays, union, narrowing, chatbot tipado) · Dia 15: módulos. **Próximo: web / servidor HTTP.**
