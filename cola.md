@@ -1,7 +1,6 @@
 # 🎯 COLA — Curso de IA 90 dias
 
 > Material de consulta RÁPIDA enquanto programo.
-> Para reflexões/histórico, ver `aprendizados.md`.
 > Material antigo cronológico em `anotacoes-antigo.md`.
 
 ---
@@ -180,6 +179,7 @@ console.log("Hoje é", dia + "/" + mes + "/" + ano);
 > 🎯 Atalho: `npx tsx arquivo.ts` (compila e roda de uma vez).
 > 🎯 Instala 1x global: `npm install -g tsx`.
 > ⚠️ Node/Process reclamando ("Cannot find name 'process'")? Falta o dicionário de tipos do Node: `npm i --save-dev @types/node`.
+> ⚠️ **O `tsx` RODA mesmo com erro de tipo!** Ele só apaga os tipos e executa. Terminal funcionando ≠ TS satisfeito. **PROBLEMS = 0 antes de rodar.**
 
 ### Os 3 tipos básicos
 
@@ -528,7 +528,7 @@ main();
 
 ## 🚨 15. ERROS QUE EU SEMPRE COMETO
 
-> 🔥 **As que mais me pegam:** autocomplete do VS Code mentindo · nome de variável com espaço · valor no lugar de tipo (TS) · `cd ..` esquecido antes do `git add`.
+> 🔥 **As que mais me pegam:** autocomplete do VS Code mentindo · nome de variável com espaço · valor no lugar de tipo (TS) · `cd ..` esquecido antes do `git add` · **rodar com PROBLEMS aceso**.
 
 ### Digitação / sintaxe
 
@@ -543,6 +543,10 @@ main();
 | Import sem aspas / com `from` no dotenv | erro | caminho entre aspas; `import "dotenv/config";` |
 | `new Promise(resolve)` (falta parêntese) | "Malformed arrow function" | `new Promise((resolve) => ...)` |
 | Typo no nome do arquivo (`date`/`dates`) | "Cannot find module" | use TAB |
+| Método com Maiúscula (`Parse`) | "is not a function" | métodos são minúsculos: `parse`, `safeParse` — JS é case-sensitive |
+| `+` solto DENTRO de `String(...)` | resultado vira `NaN` | `+` sozinho na frente de valor converte pra NÚMERO ("unary plus"). O `+` de juntar texto fica ENTRE os pedaços |
+| Vírgula no lugar de `+` na concatenação | "Expression expected" / saída errada | corrente única: `texto + valor + texto + valor`, sem vírgula |
+| `+` no fim sem nada depois | "Expression expected" | todo `+` precisa de algo dos DOIS lados |
 
 ### Estrutura / conceito
 
@@ -556,12 +560,22 @@ main();
 | Esquecer `.text` em `content[0]` | mostra `[object Object]` | `resposta.content[0].text` |
 | **(TS)** VALOR na definição (`a: 7`, `role: "user"`) | erro | na definição vai TIPO; valor é na chamada/objeto |
 | **(TS)** `console.log(somar)` sem `()` | mostra `[Function]` | CHAMA com `somar(7, 4)` |
+| **(TS)** rodar com PROBLEMS > 0 | roda "funcionando" mas com bug de tipo escondido | `tsx` NÃO checa tipos. PROBLEMS = 0 antes de rodar |
+| Função riscada no editor | pode quebrar em versão futura | riscado = deprecated. PARA e pergunta o substituto (ex: `.email()` → `z.email()` no Zod v4) |
 | **(git)** `git add .` dentro da dia-XX | cola/raiz ficam de fora | `cd ..` pra RAIZ antes |
 | `try` sem `catch` | erro | try sempre vem com catch |
 | `}` a mais (fecha bloco cedo) | lógica quebra | `Shift+Alt+F` pra ver a estrutura |
 | Esquecer `main();` | nada roda | última linha |
 | Não salvar antes de rodar | roda versão antiga | `Ctrl+S` (bolinha ● = não salvo) |
 | `messages` sem `[ ]` | erro de tipo | messages SEMPRE array |
+
+### Como ler erro GRANDE no terminal
+
+Ignora 90% e procura DUAS coisas:
+1. **A primeira linha do erro** → O QUÊ quebrou (`ZodError`, `TypeError: X is not a function`)
+2. **A primeira linha do stack com o MEU arquivo** → ONDE (`schema.ts:13`)
+
+O resto (linhas com `node:internal`, `node_modules`) é ruído interno.
 
 ---
 
@@ -611,6 +625,136 @@ main();
 
 ---
 
-## 📆 PROGRESSO
+## 🛡️ 19. ZOD (validação em RUNTIME)
 
-Dias 1-6: JS fundamentos · Dia 7-8: API + chatbot CLI · Dia 9: strings/regex/datas · Dias 10-14: TypeScript (tipos, interfaces, arrays, union, narrowing, chatbot tipado) · Dia 15: módulos. **Próximo: web / servidor HTTP.**
+**O problema:** os tipos do TS **desaparecem quando o código roda**. TS só protege contra erro MEU no código. Se a API do banco mandar `valor: "quarenta"` onde eu esperava number, o TS nem fica sabendo — e o SaaS quebra em produção com dado real.
+
+**A solução:** Zod valida ENQUANTO roda. Declaro as regras uma vez (schema) e ganho: validação em runtime + tipo TS de graça.
+
+| Ferramenta | Quando valida | Protege contra |
+|---|---|---|
+| TypeScript | Compilação (antes de rodar) | Erro meu no código |
+| Zod | Runtime (enquanto roda) | Dado EXTERNO errado (API, user, LLM) |
+
+> Setup: `npm install zod` · `import { z } from "zod";`
+
+### Schema = as regras do dado
+
+```typescript
+const TransacaoSchema = z.object({
+  descricao: z.string().min(3),        // string, mínimo 3 caracteres
+  valor: z.number().positive(),        // número > 0
+  categoria: z.string().optional(),    // pode faltar
+  moeda: z.string().default("BRL"),    // se não vier, Zod PREENCHE
+});
+
+// tipo TS de graça — 1 fonte de verdade (mudou o schema, muda o tipo):
+type Transacao = z.infer<typeof TransacaoSchema>;
+```
+
+| Método | Faz o quê |
+|---|---|
+| `.min(n)` / `.max(n)` | número: valor mín/máx · string: tamanho |
+| `.positive()` | número > 0 (transações!) |
+| `.optional()` | campo pode não existir |
+| `.default(x)` | se não vier, usa x — o `.data` volta TRANSFORMADO |
+| `z.email()` | e-mail válido (⚠️ Zod v4: `z.email()`, NÃO `z.string().email()` — riscado/deprecated) |
+
+### parse vs safeParse (o porteiro da balada)
+
+Os dois validam IGUAL. Muda a reação quando o dado é ruim:
+
+| | Dado OK | Dado ruim | Quando usar |
+|---|---|---|---|
+| `parse` | devolve o dado | **EXPLODE** (exceção, programa morre) | erro interno/config minha — bug deve gritar |
+| `safeParse` | `{ success: true, data }` | `{ success: false, error }` — programa segue vivo | dado EXTERNO (cliente, Open Finance, Claude) — trato e sigo |
+
+### Ler os erros (issues)
+
+```typescript
+const resultado = TransacaoSchema.safeParse(dadoExterno);
+
+if (resultado.success === false) {
+  for (const issue of resultado.error.issues) {
+    console.log("campo: " + String(issue.path[0]) + " — " + issue.message);
+  }
+}
+```
+
+> 🎯 `issues` é ARRAY — o Zod pega TODOS os campos ruins de uma vez, não só o primeiro.
+> 🎯 `path` também é array (objetos aninhados: `["transacoes", 1, "valor"]` = transação de índice 1). Por isso `path[0]`.
+> ⚠️ `path[0]` precisa de `String(...)` pra concatenar — o TS não sabe se a chave é string, number ou symbol.
+> 🎯 `.data` do safeParse NÃO é o dado original — é o dado validado E transformado (defaults preenchidos).
+
+### Onde entra no projeto
+
+Todo dado que ENTRA no orquestrador (Open Finance, Twelve Data, resposta do Claude) passa por um schema Zod ANTES de ser usado. Dado ruim → `success: false` → trato sem derrubar o servidor. É a base do Dia 19 (structured output).
+
+> 📌 Pendência: schemas ANINHADOS e `z.array()` — volta no Dia 19.
+
+---
+
+## 🌿 20. GIT AVANÇADO (branch, merge, conflito)
+
+**O problema:** mexer direto na `main` = testar ideia nova arriscando o código oficial. E com 2 PCs (ou 2 devs), duas edições na mesma coisa se atropelam.
+
+**Modelo mental: branch = SAVE de videogame.** Cada branch é um save completo do projeto. `git switch` = carregar outro save: **a pasta inteira no Explorer troca de versão**. Arquivo "sumiu" ao trocar de branch? Não sumiu — tá guardado no outro save. Volta pro branch e ele reaparece.
+
+| Comando | Faz o quê |
+|---|---|
+| `git branch nome` | cria o save paralelo |
+| `git switch nome` | carrega o save (a pasta muda!) |
+| `git switch -c nome` | cria E já carrega (atalho) |
+| `git branch` | lista todos — o `*` marca ONDE ESTOU |
+| `git merge nome` | traz as mudanças do save `nome` pro save ATUAL |
+| `git branch -d nome` | deleta branch (⚠️ não dá pra deletar o que estou EM CIMA — troca pra main antes) |
+| `git log --oneline -5` | últimos 5 commits, resumido |
+
+> 🎯 **Onde estou?** Canto inferior esquerdo do VS Code (ou o prompt). Olhar SEMPRE antes de commit.
+> 🎯 Merge "de boa" = `Fast-forward` (a main não mudou enquanto eu trabalhava; Git só puxa a fita).
+
+### Conflito de merge (quando o Git te promove a juiz)
+
+Acontece quando os DOIS lados mudaram a MESMA linha (ou criaram o mesmo arquivo diferente). O Git para e grita `CONFLICT ... fix conflicts and then commit the result`. Aí ele escreve marcadores DENTRO do arquivo:
+
+```
+<<<<<<< HEAD          ← daqui pra baixo: a versão de ONDE ESTOU
+linha de MAIN
+=======               ← divisória
+linha da versao B
+>>>>>>> experimento   ← fim da versão do OUTRO branch
+```
+
+**Resolver (na mão, sem os botões do VS Code até dominar):**
+1. Editar o arquivo até sobrar SÓ o conteúdo final (apagar TODAS as linhas de marcação)
+2. `Ctrl+S`
+3. `git add .` (= "declaro resolvido")
+4. `git commit -m "resolve conflito"`
+
+> ⚠️ **Perigo real dos 2 PCs:** `origin/main` atrasado no `git log` = GitHub não tem meus commits. Esqueci o push no escritório + editei em casa = conflito sem querer. **PUSH SEMPRE NO FIM.**
+
+### GitHub Flow (como equipes trabalham)
+
+Regra: **a main é sagrada.** Tudo novo nasce em branch.
+
+| Passo | Ação |
+|---|---|
+| 1 | `git switch -c minha-feature` |
+| 2 | trabalha e commita no branch |
+| 3 | `git push -u origin minha-feature` + abre **Pull Request** no GitHub |
+| 4 | revisão → merge pela interface (botão verde) |
+| 5 | deleta o branch |
+
+> Pull Request = merge com vitrine: alguém revisa ANTES de aprovar. É onde vou barrar código ruim quando tiver dev contratado.
+> 📌 Pendência: `rebase` (reescrever histórico) — volta na semana 10-11.
+
+---
+
+## 📆 PROGRESSO (numeração do plano oficial)
+
+✅ **Dias 1–8:** JS moderno · TS completo · **Zod** · projeto CLI (ViaCEP) · **Git avançado (branch/merge/conflito)**
+✅ **Dias 10–11:** LLM (tokens, context window, temperatura) · tipos de app de IA
+✅ **Dias 15–16:** Claude API (curl + SDK) · chatbot CLI multi-turn tipado com custo
+⚠️ **Gap leve — Dia 9:** terminal (grep, pipes, env vars) — encaixar antes do Dia 17
+❌ **Gaps — Dias 12, 13, 14:** prompt engineering formal · ler "Building Effective Agents" · projeto 10 prompts
+🔜 **Depois dos gaps:** Dia 17 (Streaming) → 18 (Tool use) → 19 (Structured output + Zod aninhado)
